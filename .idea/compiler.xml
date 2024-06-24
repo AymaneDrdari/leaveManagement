@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="eureka-service" />
+        <module name="equipe-service" />
+        <module name="conge-service" />
+        <module name="common" />
+        <module name="collaborateur-service" />
+        <module name="soldeconge-service" />
+        <module name="niveau-service" />
+        <module name="jourferie-service" />
+        <module name="exercice-service" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="collaborateur-service (1)" target="17" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="collaborateur-service" options="" />
+      <module name="common" options="" />
+      <module name="conge-service" options="" />
+      <module name="equipe-service" options="" />
+      <module name="eureka-service" options="" />
+      <module name="exercice-service" options="" />
+      <module name="jourferie-service" options="" />
+      <module name="niveau-service" options="" />
+      <module name="soldeconge-service" options="" />
+    </option>
+  </component>
+</project>

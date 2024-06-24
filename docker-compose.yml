@@ -1,0 +1,86 @@
+version: '3.8'
+
+services:
+  eureka-server:
+    image: eureka-service
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    networks:
+      - eurekanet
+
+  collaborateur-service:
+    image: collaborateurservice
+    container_name: collaborateur-service
+    ports:
+      - "8081:8081"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka
+    networks:
+      - eurekanet
+    depends_on:
+      - eureka-server
+
+  conge-service:
+    image: congeservice
+    container_name: conge-service
+    ports:
+      - "8082:8082"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka
+    networks:
+      - eurekanet
+    depends_on:
+      - eureka-server
+
+  soldeconge-service:
+    image: soldecongeservice
+    container_name: soldeconge-service
+    ports:
+      - "8083:8083"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka
+    networks:
+      - eurekanet
+    depends_on:
+      - eureka-server
+
+  niveau-service:
+    image: niveauservice
+    container_name: niveau-service
+    ports:
+      - "8084:8084"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka
+    networks:
+      - eurekanet
+    depends_on:
+      - eureka-server
+
+  jourferie-service:
+    image: jourferieservice
+    container_name: jourferie-service
+    ports:
+      - "8085:8085"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka
+    networks:
+      - eurekanet
+    depends_on:
+      - eureka-server
+
+  exercice-service:
+    image: exerciceservice
+    container_name: exercice-service
+    ports:
+      - "8086:8086"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka
+    networks:
+      - eurekanet
+    depends_on:
+      - eureka-server
+
+networks:
+  eurekanet:
+    driver: bridge

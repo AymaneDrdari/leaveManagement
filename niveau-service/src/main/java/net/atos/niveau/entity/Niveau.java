@@ -1,0 +1,43 @@
+package net.atos.niveau.entity;
+import net.atos.common.entity.Collaborateur;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
+import lombok.*;
+import net.atos.common.entity.Collaborateur;  // Import correct
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
+@Entity
+@Table(name = "niveau")
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class Niveau {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "code", nullable = false, updatable = false, unique = true, columnDefinition = "BINARY(16)")
+    private UUID code;
+
+    private String nom;
+    private String description;
+
+    @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "date_creation", nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    private Date dateCreation;
+
+    @OneToMany(mappedBy = "niveau")
+    @JsonIgnoreProperties("niveau")
+    private List<Collaborateur> collaborateurs;
+
+    // Constructeur acceptant UUID et String
+    public Niveau(UUID code, String nom) {
+        this.code = code;
+        this.nom = nom;
+    }
+}
