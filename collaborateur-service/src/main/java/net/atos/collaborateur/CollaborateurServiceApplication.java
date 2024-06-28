@@ -12,7 +12,6 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 @EnableFeignClients
 @ComponentScan(basePackages = {"net.atos.collaborateur", "net.atos.common"})
 @EntityScan(basePackages = {"net.atos.collaborateur.entity", "net.atos.common.entity"})
-//@EnableJpaRepositories(basePackages = {"net.atos.collaborateur.repository", "net.atos.common.repository"})
 @SpringBootApplication
 public class CollaborateurServiceApplication {
 

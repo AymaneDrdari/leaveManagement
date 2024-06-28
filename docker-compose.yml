@@ -16,10 +16,14 @@ services:
       - "8081:8081"
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/collaborateur_database
+      - SPRING_DATASOURCE_USERNAME=root12
+      - SPRING_DATASOURCE_PASSWORD=
     networks:
       - eurekanet
     depends_on:
       - eureka-server
+      - mysql
 
   conge-service:
     image: congeservice
@@ -28,22 +32,14 @@ services:
       - "8082:8082"
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/conge_database
+      - SPRING_DATASOURCE_USERNAME=root12
+      - SPRING_DATASOURCE_PASSWORD=
     networks:
       - eurekanet
     depends_on:
       - eureka-server
-
-  soldeconge-service:
-    image: soldecongeservice
-    container_name: soldeconge-service
-    ports:
-      - "8083:8083"
-    environment:
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka
-    networks:
-      - eurekanet
-    depends_on:
-      - eureka-server
+      - mysql
 
   niveau-service:
     image: niveauservice
@@ -52,22 +48,14 @@ services:
       - "8084:8084"
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/niveau_database
+      - SPRING_DATASOURCE_USERNAME=root12
+      - SPRING_DATASOURCE_PASSWORD=
     networks:
       - eurekanet
     depends_on:
       - eureka-server
-
-  jourferie-service:
-    image: jourferieservice
-    container_name: jourferie-service
-    ports:
-      - "8085:8085"
-    environment:
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka
-    networks:
-      - eurekanet
-    depends_on:
-      - eureka-server
+      - mysql
 
   exercice-service:
     image: exerciceservice
@@ -76,11 +64,54 @@ services:
       - "8086:8086"
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/exercice_database
+      - SPRING_DATASOURCE_USERNAME=root12
+      - SPRING_DATASOURCE_PASSWORD=
     networks:
       - eurekanet
     depends_on:
       - eureka-server
+      - mysql
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_container
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: root12
+      MYSQL_PASSWORD:
+      MYSQL_DATABASE: gestionconge
+    command: --default-authentication-plugin=mysql_native_password
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - eurekanet
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: phpmyadmin
+    environment:
+      PMA_HOST: mysql_container
+      PMA_PORT: 3306
+      MYSQL_USER: root
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "8080:80"
+    depends_on:
+      - mysql
+    networks:
+      - eurekanet
 
 networks:
   eurekanet:
     driver: bridge
+
+volumes:
+  mysql_data:

@@ -134,13 +134,14 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
 					<mainClass>net.atos.collaborateur.CollaborateurServiceApplication</mainClass>
-					<excludes>
-						<exclude>
-							<groupId>org.projectlombok</groupId>
-							<artifactId>lombok</artifactId>
-						</exclude>
-					</excludes>
 				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
