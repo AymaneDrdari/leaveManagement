@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="dataSourceStorageLocal" created-in="IU-241.18034.62">
+    <data-source name="exercice_database" uuid="8e14673d-ed10-4b09-9440-44db38b799a5">
+      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="MYSQL" />
+      <user-name>root12</user-name>
+      <schema-mapping />
+    </data-source>
+    <data-source name="collaborateur_database" uuid="d1edb0b6-8858-4d01-b80b-af3ca0d43946">
+      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="MYSQL" />
+      <user-name>root12</user-name>
+      <schema-mapping />
+    </data-source>
+    <data-source name="common_database" uuid="8803980b-6c70-403d-901d-9f3b1df8d698">
+      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="MYSQL" />
+      <user-name>root12</user-name>
+      <schema-mapping />
+    </data-source>
+    <data-source name="conge_database" uuid="eddb0161-fab7-450a-9940-07600e89fdc0">
+      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="MYSQL" />
+      <user-name>root12</user-name>
+      <schema-mapping />
+    </data-source>
+    <data-source name="equipe_database" uuid="b95c1b15-82ab-4634-9dbd-fd8755f02a57">
+      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="MYSQL" />
+      <user-name>root12</user-name>
+      <schema-mapping />
+    </data-source>
+    <data-source name="jourFerie_database" uuid="75760f44-f413-4861-bcf5-216ff24e5556">
+      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="MYSQL" />
+      <user-name>root12</user-name>
+      <schema-mapping />
+    </data-source>
+    <data-source name="niveau_database" uuid="92037254-1d68-4a98-ae68-53ea83ce59fc">
+      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="MYSQL" />
+      <user-name>root12</user-name>
+      <schema-mapping />
+    </data-source>
+    <data-source name="soldeConge_database" uuid="9dcbc820-5785-406b-a230-3002e8fb82b6">
+      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="MYSQL" />
+      <user-name>root12</user-name>
+      <schema-mapping />
+    </data-source>
+  </component>
+</project>

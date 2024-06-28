@@ -8,8 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
-@Entity
-@Table(name = "solde_conge")
+@Entity(name = "SoldeCongeCommon")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
