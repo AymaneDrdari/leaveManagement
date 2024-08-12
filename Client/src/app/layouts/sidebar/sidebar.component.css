@@ -1,0 +1,30 @@
+/* Ajout de padding et box-shadow au mat-nav-list */
+.mat-nav-list {
+  padding: 16px; /* Ajoute un padding autour de la liste */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Ajoute une ombre autour de la liste */
+  border-radius: 8px; /* Ajoute un arrondi aux coins (optionnel) */
+  background-color: #3f51b5;
+  font-size: 17px;
+}
+
+/* Les styles existants */
+.mat-icon {
+  margin-right: 12px;
+  vertical-align: middle;
+}
+
+.mat-list-item {
+  line-height: 48px;
+}
+
+.mat-list-item span {
+  display: inline-block;
+  vertical-align: middle;
+}
+.active-link {
+  background-color: #b6fafa; /* Couleur de fond pour le lien actif */
+  color: black; /* Couleur du texte pour le lien actif */
+  font-weight: bold; /* Met le texte en gras */
+  font-size: large;
+}
+

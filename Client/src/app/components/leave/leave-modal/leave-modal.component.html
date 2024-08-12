@@ -1,0 +1,16 @@
+<h1 mat-dialog-title class="custom-dialog-title">
+  <mat-icon>event</mat-icon> {{data.description}}
+</h1>
+<mat-dialog-content class="custom-dialog-content">
+  <div class="highlight-on-hover">
+    <p class="custom-dialog-text"><strong>Date de début :</strong> {{data.date_debut | date: 'longDate'}}</p>
+    <p class="custom-dialog-text"><strong>Date de fin :</strong> {{data.date_fin | date: 'longDate'}}</p>
+    <p class="custom-dialog-text"><strong>Nombre de jours pris :</strong> {{data.nombre_jours_pris}}</p>
+    <p class="custom-dialog-text"><strong>Demi-journée matin :</strong> {{data.demi_journee_matin ? 'Oui' : 'Non'}}</p>
+    <p class="custom-dialog-text"><strong>Demi-journée soir :</strong> {{data.demi_journee_soir ? 'Oui' : 'Non'}}</p>
+    <p class="custom-dialog-text"><strong>Collaborateur :</strong> {{data.collaborateur_email}}</p>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end" class="custom-dialog-actions">
+  <button mat-button mat-dialog-close>Fermer</button>
+</mat-dialog-actions>

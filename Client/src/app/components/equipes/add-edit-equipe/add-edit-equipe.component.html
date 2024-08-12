@@ -1,0 +1,19 @@
+<h1 mat-dialog-title>{{ isEdit ? 'Modifier' : 'Ajouter' }} une Équipe</h1>
+<form [formGroup]="equipeForm">
+  <mat-dialog-content>
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Nom de l'Équipe</mat-label>
+      <input matInput formControlName="nom" placeholder="Nom de l'Équipe" required>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Description</mat-label>
+      <textarea matInput formControlName="description" placeholder="Description"></textarea>
+    </mat-form-field>
+  </mat-dialog-content>
+
+  <mat-dialog-actions>
+    <button mat-button (click)="onCancel()">Annuler</button>
+    <button mat-raised-button color="primary" (click)="onSave()">Enregistrer</button>
+  </mat-dialog-actions>
+</form>

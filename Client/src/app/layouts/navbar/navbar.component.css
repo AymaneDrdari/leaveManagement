@@ -1,0 +1,67 @@
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #ffffff; /* Couleur de fond blanche pour un look propre */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Ombre subtile pour la profondeur */
+  padding: 10px 20px; /* Ajout de padding en haut */
+}
+
+.navbar-section {
+  display: flex;
+  align-items: end;
+}
+
+.logo-section {
+  flex: 1;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.logo {
+  height: 40px; /* Hauteur du logo */
+  width: auto; /* Largeur automatique pour conserver les proportions */
+}
+
+.search-section {
+  flex: 8;
+  display: flex;
+  justify-content: right;
+  margin-top: 8px;
+  /*margin: 0 20px; !* Marge horizontale pour espacer la section recherche *!*/
+  margin-right: 2px;
+}
+
+.search-form {
+  width: 100%;
+  max-width: 500px; /* Augmenter la largeur maximale de la barre de recherche */
+}
+
+.profile-section {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.profile-name {
+  margin-right: 8px; /* Espace entre le nom et l'icône */
+}
+
+.profile-section button {
+  display: flex;
+  align-items: center;
+}
+
+.mat-menu-item {
+  display: flex;
+  align-items: center;
+}
+
+.mat-menu-item mat-icon {
+  margin-right: 8px;
+}

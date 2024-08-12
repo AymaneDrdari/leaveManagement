@@ -1,0 +1,49 @@
+<div class="indicators">
+  <mat-card class="indicator-card"
+            (click)="setActiveCard('holidays')"
+            [ngClass]="{ 'hovered': isHovered('holidays'), 'active': isHovered('holidays') }">
+    <mat-card-content>
+      <mat-icon>date_range</mat-icon>
+      <h3>Jours Fériés</h3>
+    </mat-card-content>
+  </mat-card>
+  <mat-card class="indicator-card royal"
+            (click)="setActiveCard('royal')"
+            [ngClass]="{ 'hovered': isHovered('royal'), 'active': isHovered('royal') }">
+    <mat-card-content>
+      <mat-icon>people</mat-icon>
+      <h3>Équipe Royal</h3>
+      <p>{{ leaveCounts['royal'] }}</p>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="indicator-card gold"
+            (click)="setActiveCard('gold')"
+            [ngClass]="{ 'hovered': isHovered('gold'), 'active': isHovered('gold') }">
+    <mat-card-content>
+      <mat-icon>people</mat-icon>
+      <h3>Équipe Gold</h3>
+      <p>{{ leaveCounts['gold'] }}</p>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="indicator-card mauve"
+            (click)="setActiveCard('mauve')"
+            [ngClass]="{ 'hovered': isHovered('mauve'), 'active': isHovered('mauve') }">
+    <mat-card-content>
+      <mat-icon>people</mat-icon>
+      <h3>Équipe Mauve</h3>
+      <p>{{ leaveCounts['mauve'] }}</p>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="indicator-card blue"
+            (click)="setActiveCard('blue')"
+            [ngClass]="{ 'hovered': isHovered('blue'), 'active': isHovered('blue') }">
+    <mat-card-content>
+      <mat-icon>people</mat-icon>
+      <h3>Équipe Bleue</h3>
+      <p>{{ leaveCounts['blue'] }}</p>
+    </mat-card-content>
+  </mat-card>
+</div>

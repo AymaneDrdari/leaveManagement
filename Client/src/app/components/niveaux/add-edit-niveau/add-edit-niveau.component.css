@@ -1,0 +1,40 @@
+.full-width {
+  width: 100%;
+}
+
+.mat-dialog-title {
+  font-weight: bold;
+  text-align: center;
+}
+
+.mat-dialog-content {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 24px;
+}
+
+.mat-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.mat-form-field {
+  margin-bottom: 16px;
+  width: 100%; /* Assurer que les champs de formulaire prennent toute la largeur */
+}
+
+.mat-checkbox {
+  margin-bottom: 16px;
+}
+
+textarea {
+  resize: vertical;
+}
+
+/* Limiter la largeur du modal et le centrer */
+.mat-dialog-container {
+  max-width: 600px !important; /* Définir une largeur maximale pour le modal */
+  width: 100% !important;
+  margin: auto;
+}

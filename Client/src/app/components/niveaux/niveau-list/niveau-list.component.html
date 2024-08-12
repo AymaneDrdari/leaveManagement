@@ -1,0 +1,57 @@
+<app-navbar></app-navbar>
+<div class="main-container">
+  <app-sidebar class="sidebar"></app-sidebar>
+  <div class="content">
+    <div class="header">
+      <button mat-raised-button color="primary" (click)="openAddEditNiveauModal()">
+        Ajouter un Niveau
+      </button>
+    </div>
+
+    <div class="table-container">
+      <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 niveau-table">
+        <ng-container matColumnDef="nom">
+          <th mat-header-cell *matHeaderCellDef class="head-table">Nom</th>
+          <td mat-cell *matCellDef="let element" class="minimize-column">{{ element.nom }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="description">
+          <th mat-header-cell *matHeaderCellDef class="head-table">Description</th>
+          <td mat-cell *matCellDef="let element" class="minimize-column">{{ element.description }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="dateCreation">
+          <th mat-header-cell *matHeaderCellDef class="head-table">Date de création</th>
+          <td mat-cell *matCellDef="let element" class="minimize-column">{{ element.date_creation | date }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="head-table">Actions</th>
+          <td mat-cell *matCellDef="let element" class="minimize-column">
+            <button mat-icon-button color="primary" (click)="openAddEditNiveauModal(element)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="deleteNiveau(element.code)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </div>
+
+    <!-- Paginator Angular Material -->
+    <mat-paginator [pageSize]="5" [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+  </div>
+</div>
+
+<div *ngIf="showDeleteConfirmation" class="delete-confirmation-overlay">
+  <div class="delete-confirmation-dialog">
+    <h2>Confirmer la suppression</h2>
+    <p>Êtes-vous sûr de vouloir supprimer cet élément ?</p>
+    <button mat-button color="warn" (click)="confirmDelete()">Supprimer</button>
+    <button mat-button (click)="closeDeleteConfirmation()">Annuler</button>
+  </div>
+</div>

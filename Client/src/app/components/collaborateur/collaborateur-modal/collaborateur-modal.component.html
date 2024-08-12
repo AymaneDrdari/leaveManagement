@@ -1,0 +1,17 @@
+<h1 mat-dialog-title class="custom-dialog-title">
+  <mat-icon>person</mat-icon> {{ data.nom }} {{ data.prenom }}
+</h1>
+<mat-dialog-content class="custom-dialog-content">
+  <div class="highlight-on-hover">
+    <p class="custom-dialog-text"><strong>Email:</strong> {{ data.email }}</p>
+    <p class="custom-dialog-text"><strong>Niveau:</strong> {{ data.niveau }}</p>
+    <p class="custom-dialog-text"><strong>Équipe:</strong> {{ data.equipe }}</p>
+    <p class="custom-dialog-text"><strong>Type:</strong> {{ data.type }}</p>
+    <p class="custom-dialog-text"><strong>Nombre de jours payés par mois:</strong> {{ data.nombreJoursPayesMois }}</p>
+    <p class="custom-dialog-text"><strong>Date d'entrée:</strong> {{ data.dateEntreeProjet | date }}</p>
+    <p class="custom-dialog-text"><strong>Date de sortie:</strong> {{ data.dateSortieProjet | date }}</p>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end" class="custom-dialog-actions">
+  <button mat-button mat-dialog-close>Fermer</button>
+</mat-dialog-actions>

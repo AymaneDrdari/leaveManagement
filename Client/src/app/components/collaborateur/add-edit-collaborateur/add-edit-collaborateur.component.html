@@ -1,0 +1,83 @@
+<h1 mat-dialog-title>{{ isEdit ? 'Modifier un collaborateur' : 'Ajouter un collaborateur' }}</h1>
+<form [formGroup]="collaborateurForm">
+  <mat-dialog-content>
+    <div class="form-row">
+      <mat-form-field appearance="fill" class="mat-form-field-half">
+        <mat-label>Nom</mat-label>
+        <input matInput formControlName="nom" required>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="mat-form-field-half">
+        <mat-label>Prénom</mat-label>
+        <input matInput formControlName="prenom" required>
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Email</mat-label>
+      <input matInput formControlName="email" required>
+    </mat-form-field>
+
+    <div class="form-row">
+      <mat-form-field appearance="fill" class="mat-form-field-half">
+        <mat-label>Niveau</mat-label>
+        <mat-select formControlName="niveau" required>
+          <mat-option *ngFor="let niveau of niveaux" [value]="niveau">{{ niveau.nom }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="mat-form-field-half">
+        <mat-label>Équipe</mat-label>
+        <mat-select formControlName="equipe" required>
+          <mat-option *ngFor="let equipe of equipes" [value]="equipe">{{ equipe.nom }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="fill" class="mat-form-field-half">
+        <mat-label>Rôle</mat-label>
+        <mat-select formControlName="role" required>
+          <mat-option value="COLLABORATEUR">COLLABORATEUR</mat-option>
+          <mat-option value="CHEF_EQUIPE">CHEF_EQUIPE</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="mat-form-field-half">
+        <mat-label>Type</mat-label>
+        <mat-select formControlName="type" required>
+          <mat-option value="SALARIE">SALARIE</mat-option>
+          <mat-option value="INDEPENDANT">INDEPENDANT</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="fill" class="mat-form-field-half">
+        <mat-label>Date d'entrée dans le projet</mat-label>
+        <input matInput formControlName="date_entree_projet" [matDatepicker]="picker1" required>
+        <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+        <mat-datepicker #picker1></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="mat-form-field-half">
+        <mat-label>Date de sortie du projet</mat-label>
+        <input matInput formControlName="date_sortie_projet" [matDatepicker]="picker2">
+        <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+        <mat-datepicker #picker2></mat-datepicker>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="fill" class="mat-form-field-half">
+        <mat-label>Nombre de jours payés par mois</mat-label>
+        <input matInput type="number" formControlName="nombre_jours_payes_mois" required>
+      </mat-form-field>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions>
+    <button mat-button (click)="onCancel()">Annuler</button>
+    <button mat-raised-button color="primary" (click)="onSave()">Enregistrer</button>
+  </mat-dialog-actions>
+</form>

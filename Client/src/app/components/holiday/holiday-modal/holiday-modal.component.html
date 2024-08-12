@@ -1,0 +1,13 @@
+<h1 mat-dialog-title class="custom-dialog-title">
+  <mat-icon>calendar_today</mat-icon> {{data.description}}
+</h1>
+<mat-dialog-content class="custom-dialog-content">
+  <div class="highlight-on-hover">
+    <p class="custom-dialog-text"><strong>Date de début:</strong> {{data.date_debut}}</p>
+    <p class="custom-dialog-text"><strong>Date de fin:</strong> {{data.date_fin}}</p>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end" class="custom-dialog-actions">
+  <button mat-button mat-dialog-close>Fermer</button>
+</mat-dialog-actions>
+

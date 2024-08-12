@@ -1,0 +1,42 @@
+<h1 mat-dialog-title>{{ isEdit ? 'Modifier un congé' : 'Déclarer un congé' }}</h1>
+<form [formGroup]="congeForm">
+  <mat-dialog-content>
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Collaborateur</mat-label>
+      <mat-select formControlName="collaborateur_email" required>
+        <mat-option *ngFor="let collaborateur of collaborateurs" [value]="collaborateur.email">
+          {{ collaborateur.nom }} {{ collaborateur.prenom }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Date de début</mat-label>
+      <input matInput formControlName="date_debut" [matDatepicker]="picker1" placeholder="Sélectionnez une date" required>
+      <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
+      <mat-datepicker #picker1></mat-datepicker>
+      <mat-hint>Format: MM/JJ/AAAA</mat-hint>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Date de fin</mat-label>
+      <input matInput formControlName="date_fin" [matDatepicker]="picker2" placeholder="Sélectionnez une date" required>
+      <mat-datepicker-toggle matIconSuffix [for]="picker2"></mat-datepicker-toggle>
+      <mat-datepicker #picker2></mat-datepicker>
+      <mat-hint>Format: MM/JJ/AAAA</mat-hint>
+    </mat-form-field>
+
+    <mat-checkbox formControlName="demi_journee_matin">Demi-journée au début du congé</mat-checkbox>
+    <mat-checkbox formControlName="demi_journee_soir">Demi-journée à la fin du congé</mat-checkbox>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Description</mat-label>
+      <textarea matInput formControlName="description" placeholder="Entrez une description"></textarea>
+    </mat-form-field>
+  </mat-dialog-content>
+
+  <mat-dialog-actions>
+    <button mat-button (click)="onCancel()">Annuler</button>
+    <button mat-raised-button color="primary" (click)="onSave()">Sauvegarder</button>
+  </mat-dialog-actions>
+</form>

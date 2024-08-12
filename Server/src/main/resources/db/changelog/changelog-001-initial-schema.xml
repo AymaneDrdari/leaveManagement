@@ -1,0 +1,33 @@
+<!--<?xml version="1.0" encoding="UTF-8"?>-->
+<!--<databaseChangeLog-->
+<!--        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"-->
+<!--        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"-->
+<!--        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-->
+<!--        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">-->
+
+<!--    <changeSet id="1" author="aymanedrdari">-->
+<!--        <preConditions onFail="MARK_RAN">-->
+<!--            <not>-->
+<!--                <tableExists tableName="conges"/>-->
+<!--            </not>-->
+<!--        </preConditions>-->
+<!--        <createTable tableName="conges">-->
+<!--            <column name="id_conge" type="binary(16)">-->
+<!--                <constraints primaryKey="true" nullable="false"/>-->
+<!--            </column>-->
+<!--            <column name="date_debut" type="date">-->
+<!--                <constraints nullable="false"/>-->
+<!--            </column>-->
+<!--            <column name="date_fin" type="date">-->
+<!--                <constraints nullable="false"/>-->
+<!--            </column>-->
+<!--            <column name="description" type="varchar(255)"/>-->
+<!--            <column name="nombre_jours_pris" type="double"/>-->
+<!--            <column name="demi_journee_matin" type="bit(1)"/>-->
+<!--            <column name="demi_journee_soir" type="bit(1)"/>-->
+<!--            <column name="collaborateur_email" type="varchar(255)">-->
+<!--                <constraints nullable="false"/>-->
+<!--            </column>-->
+<!--        </createTable>-->
+<!--    </changeSet>-->
+<!--</databaseChangeLog>-->

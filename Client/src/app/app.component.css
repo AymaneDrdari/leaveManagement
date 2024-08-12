@@ -1,0 +1,121 @@
+
+/* Vous pouvez ajouter un style CSS pour s'assurer que le contenu prend toute la largeur */
+.content {
+  width: 100%;
+  padding: 0 15px; /* Optionnel : pour ajouter un peu de padding */
+}
+
+.indicators, .calendar {
+  width: 100%; /* Assurez-vous que ces composants prennent toute la largeur de leur conteneur */
+}
+/* Mise en page générale */
+.main-container {
+  display: flex;
+  height: calc(100vh - 64px); /* Ajuster pour la barre de navigation */
+  overflow: hidden; /* Empêcher le débordement */
+}
+
+.sidebar {
+  margin-top: 20px;
+  width: 250px; /* Largeur de la barre latérale */
+  background-color: #f4f4f4; /* Couleur de fond */
+  padding: 10px;
+}
+
+
+.content {
+  margin-top: 20px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  background-color: #fafafa; /* Couleur de fond pour le contenu */
+  overflow-y: auto; /* Défilement vertical si nécessaire */
+}
+
+.header {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: flex-end; /* Aligner le bouton à droite */
+}
+
+.holiday-table, .conge-table {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  overflow-x: auto;
+  border-collapse: collapse; /* Retirer les espaces entre les cellules */
+}
+
+.holiday-table th, .holiday-table td, .conge-table th, .conge-table td {
+  padding: 12px;
+  text-align: center;
+}
+
+.holiday-table th, .conge-table th {
+  background-color: #e0e0e0;
+  color: #333;
+  font-weight: bold;
+}
+
+.holiday-table .mat-icon-button, .conge-table .mat-icon-button {
+  margin: 0 4px;
+}
+
+.pagination-nav {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.pagination .page-item {
+  margin: 0 5px;
+}
+
+.pagination .page-item button {
+  min-width: 80px; /* Largeur minimale pour les boutons */
+  padding: 0 10px; /* Ajuster le padding pour un meilleur espacement */
+}
+
+.pagination .page-item.disabled button {
+  background-color: #cccccc; /* Couleur de fond pour les boutons désactivés */
+  color: #666666; /* Couleur du texte pour les boutons désactivés */
+}
+
+.pagination .page-item.active button {
+  font-weight: bold;
+}
+
+/* Boîte de dialogue de confirmation de suppression */
+.delete-confirmation-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.delete-confirmation-dialog {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 300px;
+  text-align: center;
+}
+
+/* Ajustements de colonne */
+.mat-column-date_debut, .mat-column-date_fin {
+  width: 150px;
+}
+
+.mat-column-description {
+  width: 300px;
+}
+
+.mat-column-actions {
+  width: 100px;
+}

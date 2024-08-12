@@ -1,0 +1,16 @@
+.full-width {
+  width: 100%;
+}
+
+mat-form-field {
+  margin-bottom: 16px;
+}
+
+mat-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+mat-checkbox {
+  margin-bottom: 16px;
+}

@@ -1,0 +1,75 @@
+<app-navbar></app-navbar>
+<div class="main-container">
+  <app-sidebar class="sidebar"></app-sidebar>
+  <div class="content">
+    <div class="header">
+      <button mat-raised-button style="text-align: end" color="primary" (click)="openAddEditCollaborateurModal()">
+        Ajouter un collaborateur
+      </button>
+    </div>
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 holiday-table">
+      <ng-container matColumnDef="nom">
+        <th mat-header-cell *matHeaderCellDef class="head-table">Nom</th>
+        <td mat-cell *matCellDef="let element" class="minimize-column">{{ element.nom }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="prenom">
+        <th mat-header-cell *matHeaderCellDef class="head-table">Prénom</th>
+        <td mat-cell *matCellDef="let element" class="minimize-column">{{ element.prenom }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef class="head-table">Email</th>
+        <td mat-cell *matCellDef="let element" class="minimize-column">{{ element.email }}</td>
+      </ng-container>
+
+      <!-- Modification ici : Afficher le nom de l'équipe -->
+      <ng-container matColumnDef="equipeNom">
+        <th mat-header-cell *matHeaderCellDef class="head-table">Équipe</th>
+        <td mat-cell *matCellDef="let element" class="minimize-column">{{ element.equipe.nom }}</td>
+      </ng-container>
+
+      <!-- Modification ici : Afficher le nom du niveau -->
+      <ng-container matColumnDef="niveauNom">
+        <th mat-header-cell *matHeaderCellDef class="head-table">Niveau</th>
+        <td mat-cell *matCellDef="let element" class="minimize-column">{{ element.niveau.nom }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="type">
+        <th mat-header-cell *matHeaderCellDef class="head-table">Type</th>
+        <td mat-cell *matCellDef="let element" class="minimize-column">{{ element.type }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="role">
+        <th mat-header-cell *matHeaderCellDef class="head-table">Rôle</th>
+        <td mat-cell *matCellDef="let element" class="minimize-column">{{ element.role }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef class="head-table">Actions</th>
+        <td mat-cell *matCellDef="let element" class="minimize-column">
+          <button mat-icon-button color="primary" (click)="openAddEditCollaborateurModal(element)">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="deleteCollaborateur(element.id)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+    <mat-paginator [length]="totalItems" [pageSize]="pageSize" [pageSizeOptions]="[5, 10, 20]" (page)="onPageChange($event)" aria-label="Pagination"></mat-paginator>
+  </div>
+</div>
+
+<div *ngIf="showDeleteConfirmation" class="delete-confirmation-overlay">
+  <div class="delete-confirmation-dialog">
+    <h2>Confirmer la suppression</h2>
+    <p>Êtes-vous sûr de vouloir supprimer cet élément ?</p>
+    <button mat-button color="warn" (click)="confirmDelete()">Supprimer</button>
+    <button mat-button (click)="closeDeleteConfirmation()">Annuler</button>
+  </div>
+</div>

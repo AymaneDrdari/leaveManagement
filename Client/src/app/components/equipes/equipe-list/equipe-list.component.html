@@ -1,0 +1,60 @@
+<app-navbar></app-navbar>
+<div class="main-container">
+  <app-sidebar class="sidebar"></app-sidebar>
+  <div class="content">
+    <div class="head">
+      <h1>Liste des Équipes</h1>
+      <button mat-raised-button color="primary" (click)="openAddEditEquipeModal()">Ajouter une Équipe</button>
+    </div>
+
+    <div class="table-container">
+      <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+        <!-- Index Column -->
+        <ng-container matColumnDef="index">
+          <th mat-header-cell *matHeaderCellDef class="head-table">#</th>
+          <td mat-cell *matCellDef="let element; let i = index;">{{i + 1}}</td>
+        </ng-container>
+
+        <!-- Nom Column -->
+        <ng-container matColumnDef="nom">
+          <th mat-header-cell *matHeaderCellDef class="head-table">Nom</th>
+          <td mat-cell *matCellDef="let element"> {{element.nom}} </td>
+        </ng-container>
+
+        <!-- Description Column -->
+        <ng-container matColumnDef="description">
+          <th mat-header-cell *matHeaderCellDef class="head-table">Description</th>
+          <td mat-cell *matCellDef="let element"> {{element.description}} </td>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="head-table">Actions</th>
+          <td mat-cell *matCellDef="let element">
+            <button mat-icon-button color="primary" (click)="openAddEditEquipeModal(element)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="deleteEquipe(element.code)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </div>
+
+    <mat-paginator [length]="dataSource.data.length" [pageSize]="5" [pageSizeOptions]="[5, 10, 25]" aria-label="Select page"></mat-paginator>
+
+    <!-- Confirmation dialog for delete -->
+    <div *ngIf="showDeleteConfirmation" class="delete-confirmation-overlay">
+      <div class="delete-confirmation-dialog">
+        <h2>Confirmer la suppression</h2>
+        <p>Êtes-vous sûr de vouloir supprimer cet élément ?</p>
+        <button mat-button color="warn" (click)="confirmDelete()">Supprimer</button>
+        <button mat-button (click)="closeDeleteConfirmation()">Annuler</button>
+      </div>
+    </div>
+  </div>
+</div>

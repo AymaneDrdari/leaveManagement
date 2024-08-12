@@ -1,0 +1,18 @@
+.mat-toolbar.footer {
+  background-color: #f8f9fa; /* Couleur de fond si nécessaire */
+  color: #3172af;
+  text-align: center;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 80px;
+  padding: 5px 0; /* Ajoutez du padding pour l'espacement vertical */
+}
+
+/* Centrer le contenu dans le footer */
+.mat-toolbar.footer span {
+  /*margin: 0 auto;*/
+  margin-top: 20px;
+}
