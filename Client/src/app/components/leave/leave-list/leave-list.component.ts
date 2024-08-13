@@ -14,7 +14,7 @@ import {AddEditHolidayComponent} from "../../holiday/add-edit-holiday/add-edit-h
   styleUrls: ['./leave-list.component.css']
 })
 export class LeaveListComponent implements OnInit, AfterViewInit {
-  displayedColumns: string[] = ['dateDebut', 'dateFin', 'collaborateur', 'description','nombreJoursPris', 'actions'];
+  displayedColumns: string[] = ['index','dateDebut', 'dateFin', 'collaborateur', 'description','nombreJoursPris', 'actions'];
   dataSource = new MatTableDataSource<Leave>();
   showDeleteConfirmation = false;
   selectedLeaveId: string | null = null;

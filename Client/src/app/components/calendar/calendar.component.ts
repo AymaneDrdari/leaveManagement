@@ -147,6 +147,7 @@ export class CalendarComponent implements OnInit, OnDestroy {
             title: holiday.description || 'Jour férié',
             start: dateStart.toISOString().split('T')[0],
             end: dateEnd.toISOString().split('T')[0],
+            color: 'red',
             extendedProps: holiday
           };
         }).filter(event => event.start && event.end);

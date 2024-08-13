@@ -14,7 +14,7 @@ body {
 
 .navbar-section {
   display: flex;
-  align-items: end;
+  align-items: center;
 }
 
 .logo-section {
@@ -29,12 +29,9 @@ body {
 }
 
 .search-section {
-  flex: 8;
+  flex: 1;
   display: flex;
-  justify-content: right;
-  margin-top: 8px;
-  /*margin: 0 20px; !* Marge horizontale pour espacer la section recherche *!*/
-  margin-right: 2px;
+  justify-content: center; /* Centrer la barre de recherche */
 }
 
 .search-form {

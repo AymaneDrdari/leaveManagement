@@ -14,7 +14,7 @@ import { MatPaginator } from "@angular/material/paginator";
   styleUrls: ['./holiday-list.component.css']
 })
 export class HolidayListComponent implements OnInit, AfterViewInit {
-  displayedColumns: string[] = ['date_debut', 'date_fin', 'description', 'actions'];
+  displayedColumns: string[] = ['index','date_debut', 'date_fin', 'description', 'actions'];
   dataSource = new MatTableDataSource<Holiday>();
   showDeleteConfirmation = false;
   selectedHolidayId: string | null = null;

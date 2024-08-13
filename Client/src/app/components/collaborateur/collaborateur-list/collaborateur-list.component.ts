@@ -13,7 +13,7 @@ import { ApiResponse } from '../../../models/ApiResponse';
   styleUrls: ['./collaborateur-list.component.css']
 })
 export class CollaborateurListComponent implements OnInit, AfterViewInit {
-  displayedColumns: string[] = ['nom', 'prenom', 'email', 'equipeNom', 'niveauNom', 'type', 'role', 'actions'];
+  displayedColumns: string[] = ['index','nom', 'prenom', 'email', 'equipeNom', 'niveauNom', 'type', 'role', 'actions'];
   dataSource = new MatTableDataSource<Collaborateur>();
   showDeleteConfirmation = false;
   selectedCollaborateurId: string | null = null;

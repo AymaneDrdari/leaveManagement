@@ -12,7 +12,7 @@ import {Niveau} from "../../../models/niveau.model";
   styleUrls: ['./niveau-list.component.css']
 })
 export class NiveauListComponent implements OnInit, AfterViewInit {
-  displayedColumns: string[] = ['nom', 'description', 'dateCreation', 'actions'];
+  displayedColumns: string[] = ['index', 'nom', 'description', 'actions'];
   dataSource = new MatTableDataSource<Niveau>();
   showDeleteConfirmation = false;
   selectedNiveauId: string | null = null;
