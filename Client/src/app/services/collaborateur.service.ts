@@ -23,9 +23,6 @@ export class CollaborateurService {
 
   constructor(private http: HttpClient) {}
 
-  setSelectedTeam(team: string): void {
-    this.selectedTeamSubject.next(team);
-  }
 
   createCollaborateur(collaborateur: Collaborateur): Observable<ApiResponse<Collaborateur>> {
     return this.http.post<ApiResponse<Collaborateur>>(this.apiUrl, collaborateur, this.httpOptions)
@@ -55,6 +52,9 @@ export class CollaborateurService {
   getCollaborateursPage(page: number, size: number): Observable<ApiResponse<Collaborateur[]>> {
     return this.http.get<ApiResponse<Collaborateur[]>>(`${this.apiUrl}?page=${page}&size=${size}`)
       .pipe(catchError(this.handleError));
+  }
+  getCollaborateurs(): Observable<ApiResponse<Collaborateur[]>> {
+    return this.http.get<ApiResponse<Collaborateur[]>>(this.apiUrl);
   }
 
   getAllEquipes(): Observable<ApiResponse<EquipeDTO[]>> {

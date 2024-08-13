@@ -1,12 +1,18 @@
-<!-- calendar.component.html -->
 <app-navbar></app-navbar>
 <div class="main-container">
   <app-sidebar class="sidebar"></app-sidebar>
   <div class="content">
     <app-indicators></app-indicators>
-    <div class="full-calendar-wrapper" >
-      <full-calendar [options]="calendarOptions" style="cursor: pointer;" class="full-calendar" ></full-calendar>
+    <div class="full-calendar-wrapper">
+      <full-calendar [options]="calendarOptions" style="cursor: pointer;" class="full-calendar"></full-calendar>
+      <!-- Menu contextuel -->
+      <div *ngIf="showContextMenu" id="contextMenu" class="context-menu" #contextMenuRef
+        [ngStyle]="{'top.px': contextMenuY, 'left.px': contextMenuX}">
+        <ul>
+          <li (click)="handleContextMenuAction('addLeave')">Ajouter un congé</li>
+          <li (click)="handleContextMenuAction('addHoliday')">Ajouter un jour férié</li>
+        </ul>
+      </div>
     </div>
   </div>
 </div>
-<app-footer></app-footer>
