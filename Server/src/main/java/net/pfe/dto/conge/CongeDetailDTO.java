@@ -17,4 +17,5 @@ public class CongeDetailDTO {
     private LocalDate dateDebut;
     private LocalDate dateFin;
     private double duree;  // Nombre de jours de congé
+    private String couleurEquipe;
 }

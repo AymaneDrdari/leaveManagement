@@ -422,7 +422,9 @@ public class CongeServiceImpl implements CongeService {
                 .dateDebut(conge.getDateDebut())
                 .dateFin(conge.getDateFin())
                 .duree(duree)
+                .couleurEquipe(conge.getCollaborateur().getEquipe().getCouleur())  // Récupération de la couleur de l'équipe
                 .build();
     }
+
 
 }
