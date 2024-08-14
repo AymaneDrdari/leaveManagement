@@ -4,4 +4,5 @@ export interface CongeDetailDTO {
   date_debut: Date;
   date_fin: Date;
   duree: number;  // Nombre de jours de congé
+  couleur_equipe: string;
 }

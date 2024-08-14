@@ -21,7 +21,8 @@ import { AddEditHolidayComponent } from '../holiday/add-edit-holiday/add-edit-ho
 })
 export class CalendarComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('contextMenuRef') contextMenuRef!: ElementRef;
-  selectedTeam: string | null = null;
+// Ajoutez la propriété suivante pour la liste des équipes sélectionnées
+  selectedTeams: string[] = [];  // Liste des équipes sélectionnées
   teamSubscription?: Subscription;
   holidays: any[] = [];
   contextMenuX: number = 0;
@@ -54,12 +55,11 @@ export class CalendarComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnInit(): void {
     this.teamSubscription = this.leaveService.selectedTeam$.subscribe(team => {
-      this.selectedTeam = team;
-      this.updateCalendarEvents();
+      this.setActiveCard(team); // Mise à jour des équipes sélectionnées
     });
 
     this.leaveService.leavesUpdated$.subscribe(() => {
-      this.updateCalendarEvents();
+      this.updateCalendarEvents(); // Mise à jour des événements du calendrier
     });
 
     this.updateCalendarEvents();
@@ -76,22 +76,56 @@ export class CalendarComponent implements OnInit, OnDestroy, AfterViewInit {
     document.removeEventListener('click', this.onDocumentClick.bind(this));
   }
 
+  // Méthode pour mettre à jour les événements du calendrier en fonction des équipes sélectionnées
   updateCalendarEvents(): void {
-    this.fetchHolidays(new Date().getFullYear()); // Chargement initial des jours fériés
+    // Effacer tous les événements actuels
+    const combinedEvents = [...this.holidays];  // Inclure toujours les jours fériés
 
-    if (this.selectedTeam) {
-      this.fetchLeavesByTeam(this.selectedTeam);
+    if (this.selectedTeams.length > 0) {
+      const fetchedTeams = new Set<string>();
+
+      this.selectedTeams.forEach(team => {
+        this.leaveService.getCongesByEquipe(team).subscribe((leaveResponse: ApiResponse<CongeDetailDTO[]>) => {
+          if (leaveResponse && leaveResponse.data) {
+            const leaves = leaveResponse.data.map(congeDetail => {
+              const dateStart = new Date(congeDetail.date_debut);
+              const dateEnd = new Date(congeDetail.date_fin);
+              dateEnd.setDate(dateEnd.getDate() + 1);
+              return {
+                title: `${congeDetail.collaborateur_nom} ${congeDetail.collaborateur_prenom}`,
+                start: dateStart.toISOString().split('T')[0],
+                end: dateEnd.toISOString().split('T')[0],
+                color: congeDetail.couleur_equipe || '#000000',
+                extendedProps: congeDetail
+              };
+            }).filter(event => event.start && event.end);
+
+            // Ajouter les événements si l'équipe n'a pas déjà été traitée
+            if (!fetchedTeams.has(team)) {
+              combinedEvents.push(...leaves);
+              fetchedTeams.add(team);
+            }
+
+            // Mettre à jour le calendrier avec les événements combinés
+            this.updateCalendarWithEvents(combinedEvents);
+          }
+        });
+      });
+    } else {
+      this.updateCalendarWithEvents(combinedEvents);  // Afficher uniquement les jours fériés si aucune équipe n'est sélectionnée
     }
   }
 
+
+
+
+
+  // Récupère les congés pour une équipe spécifique
   fetchLeavesByTeam(team: string): void {
-    console.log("fetch conge by team ", team);
     this.leaveService.getCongesByEquipe(team).subscribe((leaveResponse: ApiResponse<CongeDetailDTO[]>) => {
       if (leaveResponse && leaveResponse.data) {
-        console.log("fetched conge is :", leaveResponse)
         const leaves = leaveResponse.data.map(congeDetail => {
           const dateStart = new Date(congeDetail.date_debut);
-          console.log("fetched conge exactly is :", congeDetail)
           const dateEnd = new Date(congeDetail.date_fin);
           // Ajouter un jour à dateEnd
           dateEnd.setDate(dateEnd.getDate() + 1);
@@ -99,30 +133,55 @@ export class CalendarComponent implements OnInit, OnDestroy, AfterViewInit {
             title: `${congeDetail.collaborateur_nom} ${congeDetail.collaborateur_prenom}`,
             start: dateStart.toISOString().split('T')[0],
             end: dateEnd.toISOString().split('T')[0],
-            color: this.getTeamColor(team),
+            color: congeDetail.couleur_equipe || '#000000',
             extendedProps: congeDetail
           };
         }).filter(event => event.start && event.end);
-        this.calendarOptions = {
-          ...this.calendarOptions,
-          events: leaves
-        };
+
+        // Ajouter les événements au calendrier
+        this.updateCalendarWithEvents(leaves);
       }
     }, error => {
       console.error('Error fetching leaves:', error);
     });
   }
 
-  getTeamColor(team: string): string {
-    const teamColors: { [key: string]: string } = {
-      'royal': '#4169e1',
-      'gold': '#ffd700',
-      'mauve': '#8902e1',
-      'blue': '#1e90ff',
+
+  // Fusionne les jours fériés avec les congés et met à jour le calendrier
+  updateCalendarWithEvents(events: any[]): void {
+    const uniqueEvents = Array.from(new Set(events.map(e => JSON.stringify(e))))
+      .map(e => JSON.parse(e));
+
+    this.calendarOptions = {
+      ...this.calendarOptions,
+      events: uniqueEvents  // Mettre à jour les événements dans le calendrier
     };
-    return teamColors[team] || '#000000';
   }
 
+
+
+
+
+  // Méthode pour gérer la sélection des équipes
+  setActiveCard(card: string | null) {
+    if (card) {
+      const index = this.selectedTeams.indexOf(card);
+      if (index === -1) {
+        this.selectedTeams.push(card);  // Ajouter l'équipe à la liste si elle n'est pas encore sélectionnée
+      } else {
+        this.selectedTeams.splice(index, 1);  // Supprimer l'équipe si elle est déjà sélectionnée
+      }
+      this.updateCalendarEvents();  // Mettre à jour les événements en fonction des équipes sélectionnées
+    }
+  }
+
+
+  // Méthode pour vérifier si une équipe est sélectionnée
+  isHovered(card: string): boolean {
+    return this.selectedTeams.includes(card);
+  }
+
+  // Récupère les jours fériés pour l'année donnée
   fetchHolidays(year: number): void {
     this.holidayService.getHolidays(year).subscribe(
       (holidayResponse: ApiResponse<Holiday[]>) => {
@@ -134,7 +193,7 @@ export class CalendarComponent implements OnInit, OnDestroy, AfterViewInit {
               dateStart.setFullYear(year);
               dateEnd.setFullYear(year);
             }
-            // Ajouter 1 jour à dateEnd pour inclure la fin de la journée
+            // Add 1 day to dateEnd to include the end date
             dateEnd.setDate(dateEnd.getDate() + 1);
 
             return {
@@ -146,18 +205,12 @@ export class CalendarComponent implements OnInit, OnDestroy, AfterViewInit {
             };
           }).filter(event => event.start && event.end);
 
+          this.updateCalendarWithEvents([]); // Clear existing events before updating
           this.updateCalendarWithEvents(this.holidays);
         }
       }, error => {
         console.error('Error fetching holidays:', error);
       });
-  }
-
-  updateCalendarWithEvents(events: any[]): void {
-    this.calendarOptions = {
-      ...this.calendarOptions,
-      events: events
-    };
   }
 
   handleDatesSet(arg: DatesSetArg): void {

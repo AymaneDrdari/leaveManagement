@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { LeaveService } from '../../services/leave.service';
+import { LeaveService } from '../../services/leave.service';  // Ensure LeaveService is correctly imported
 
 @Component({
   selector: 'app-indicators',
@@ -7,39 +7,46 @@ import { LeaveService } from '../../services/leave.service';
   styleUrls: ['./indicators.component.css']
 })
 export class IndicatorsComponent implements OnInit {
-  leaveCounts: { [key: string]: number } = {};  // Stocker le nombre de collaborateurs en congé par équipe
+  leaveCounts: { [key: string]: number } = {};  // Store leave counts for each team
+  activeCards: Set<string> = new Set();  // Use a Set to track active cards
 
   constructor(private leaveService: LeaveService) { }
 
-  activeCard: string = '';
-
-  setActiveCard(card: string) {
-    if (this.activeCard === card) {
-      this.activeCard = '';
+  // Toggle the active state of a card
+  toggleActiveCard(card: string) {
+    if (this.activeCards.has(card)) {
+      this.activeCards.delete(card);
     } else {
-      this.activeCard = card;
-      this.leaveService.setSelectedTeam(card);  // Déclenche la récupération des congés pour l'équipe sélectionnée
+      this.activeCards.add(card);
     }
+    this.leaveService.setSelectedTeam(card);  // Notify service of selected team
   }
 
+  // Check if a card is active
+  isActiveCard(card: string): boolean {
+    return this.activeCards.has(card);
+  }
+
+  // Check if a card is hovered (or active)
   isHovered(card: string): boolean {
-    return this.activeCard === card;
+    return this.isActiveCard(card);
   }
 
+  // Lifecycle hook - On component initialization
   ngOnInit(): void {
-    this.loadLeaveCounts();  // Charger le nombre de collaborateurs en congé au démarrage
+    this.loadLeaveCounts();  // Load leave counts when the component initializes
   }
 
-  // Charger le nombre de collaborateurs en congé pour chaque équipe
+  // Method to load leave counts from the service
   loadLeaveCounts(): void {
-    const teams = ['royal', 'gold', 'mauve', 'blue'];  // Liste des équipes
+    const teams = ['royal', 'gold', 'mauve', 'blue'];  // Define your teams
 
     teams.forEach(team => {
       this.leaveService.getCountCollaborateursEnConge(team).subscribe(response => {
-        this.leaveCounts[team] = response.data || 0;  // Stocker le nombre de congés dans la carte correspondante
+        this.leaveCounts[team] = response.data || 0;  // Store the count in the leaveCounts object
       }, error => {
         console.error(`Error fetching leave count for team ${team}:`, error);
-        this.leaveCounts[team] = 0;  // En cas d'erreur, afficher 0
+        this.leaveCounts[team] = 0;  // In case of an error, set the count to 0
       });
     });
   }
