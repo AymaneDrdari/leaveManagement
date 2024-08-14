@@ -23,6 +23,10 @@ export class HolidayService {
   // const currentState = this.holidaysVisibleSubject.value;
   //this.holidaysVisibleSubject.next(!currentState);
   // }
+ // toggleHolidaysVisibility(): void {
+   // const currentState = this.holidaysVisibleSubject.value;
+    //this.holidaysVisibleSubject.next(!currentState);
+ // }
   getHolidays(year: number): Observable<ApiResponse<Holiday[]>> {
     return this.http.get<ApiResponse<Holiday[]>>(`${this.apiUrl}?annee=${year}`).pipe(
       catchError(this.handleError)

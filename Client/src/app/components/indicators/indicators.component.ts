@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { HolidayService } from '../../services/holiday.service';
 import { LeaveService } from '../../services/leave.service';
 
 @Component({
@@ -9,8 +8,8 @@ import { LeaveService } from '../../services/leave.service';
 })
 export class IndicatorsComponent implements OnInit {
   leaveCounts: { [key: string]: number } = {};  // Stocker le nombre de collaborateurs en congé par équipe
-  constructor(private holidayService: HolidayService,
-              private leaveService: LeaveService) { }
+
+  constructor(private leaveService: LeaveService) { }
 
   activeCard: string = '';
 
@@ -19,10 +18,7 @@ export class IndicatorsComponent implements OnInit {
       this.activeCard = '';
     } else {
       this.activeCard = card;
-
-      // console.log("selected team dans indicator componenet " , card)
       this.leaveService.setSelectedTeam(card);  // Déclenche la récupération des congés pour l'équipe sélectionnée
-
     }
   }
 
@@ -33,10 +29,6 @@ export class IndicatorsComponent implements OnInit {
   ngOnInit(): void {
     this.loadLeaveCounts();  // Charger le nombre de collaborateurs en congé au démarrage
   }
-
-  //toggleHolidays(): void {
-  //this.holidayService.toggleHolidaysVisibility();
-  //}
 
   // Charger le nombre de collaborateurs en congé pour chaque équipe
   loadLeaveCounts(): void {
