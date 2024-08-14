@@ -19,4 +19,6 @@ public class EquipeDTO {
     private String nom;
     private String description;
     private Date dateCreation;
+    @Size(max = 7, message = "Le code couleur ne peut pas dépasser {max} caractères")
+    private String couleur;
 }

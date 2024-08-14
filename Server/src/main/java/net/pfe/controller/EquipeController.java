@@ -28,6 +28,7 @@ public class EquipeController {
     }
     // Mapping pour gérer les requêtes POST vers /equipes
 
+    // Mapping pour gérer les requêtes POST vers /equipes
     @PostMapping
     public ResponseEntity<ApiResponse<EquipeDTO>> addEquipe(@Valid @RequestBody EquipeDTO equipeDTO) {
         try {
@@ -47,28 +48,20 @@ public class EquipeController {
         }
     }
 
-
     @GetMapping
     public ResponseEntity<ApiResponse<List<EquipeDTO>>> getAllEquipes() {
         List<EquipeDTO> equipes = equipeService.getAllEquipes();
 
-        // Vérifier si des équipes ont été trouvées
-        if (!equipes.isEmpty()) {
-            ApiResponse<List<EquipeDTO>> response = ApiResponse.<List<EquipeDTO>>builder()
-                    .message("Liste de toutes les équipes récupérée avec succès")
-                    .code(HttpStatus.OK.value())
-                    .data(equipes)
-                    .timestamp(LocalDateTime.now())
-                    .build();
-            return ResponseEntity.ok(response);
-        } else {
-            ApiResponse<List<EquipeDTO>> response = ApiResponse.<List<EquipeDTO>>builder()
-                    .message("Aucune équipe n'a été trouvée")
-                    .code(HttpStatus.NOT_FOUND.value())
-                    .timestamp(LocalDateTime.now())
-                    .build();
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-        }
+        // Construire la réponse en fonction de la présence ou non d'équipes
+        ApiResponse<List<EquipeDTO>> response = ApiResponse.<List<EquipeDTO>>builder()
+                .message(equipes.isEmpty() ? "Aucune équipe n'a été trouvée" : "Liste de toutes les équipes récupérée avec succès")
+                .code(HttpStatus.OK.value())
+                .data(equipes)
+                .timestamp(LocalDateTime.now())
+                .build();
+
+        // Retourner toujours un code 200 OK, même si la liste est vide
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{code}")
@@ -88,7 +81,7 @@ public class EquipeController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
     }
-    // Endpoint pour mettre à jour une équipe
+    // Mapping pour gérer les requêtes PUT vers /equipes/{code}
     @PutMapping("/{code}")
     public ResponseEntity<ApiResponse<EquipeDTO>> updateEquipe(@PathVariable UUID code, @Valid @RequestBody EquipeDTO equipeDTO) {
         try {

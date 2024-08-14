@@ -244,42 +244,42 @@ public class CollaborateurServiceImpl implements CollaborateurService {
         return mapCollaborateursToDTOs(collaborateursEnConge);
     }
 
-    @Override
-    public int countCollaborateursEnCongeParEquipeEtPeriode(String nomEquipe, LocalDate dateStartCalenderie, LocalDate dateEndCalenderie) {
-        UUID equipeCode = equipeService.findCodeEquipeByNom(nomEquipe);
-        if (equipeCode == null) {
-            throw new RessourceNotFoundException("Équipe introuvable avec le nom : " + nomEquipe);
-        }
-
-        List<Collaborateur> collaborateurs = collaborateurRepository.findByEquipeCode(equipeCode);
-        if (collaborateurs.isEmpty()) {
-            throw new RessourceNotFoundException("Aucun collaborateur n'a été trouvé dans cette équipe.");
-        }
-
-        long count = collaborateurs.stream()
-                .filter(collaborateur -> congeService.isCollaborateurEnConge(collaborateur, dateStartCalenderie, dateEndCalenderie))
-                .count();
-
-        return (int) count;
-    }
-
-    @Override
-    public List<CollaborateurDTO> findCollaborateursEnCongeParEquipeAnnee(String nomEquipe) {
-        UUID equipeCode = equipeService.findCodeEquipeByNom(nomEquipe);
-        if (equipeCode == null) {
-            throw new RessourceNotFoundException("Équipe introuvable avec le nom : " + nomEquipe);
-        }
-
-        List<Collaborateur> collaborateurs = collaborateurRepository.findByEquipeCode(equipeCode);
-        if (collaborateurs.isEmpty()) {
-            throw new RessourceNotFoundException("Aucun collaborateur n'a été trouvé dans cette équipe.");
-        }
-
-        // Filtrer les collaborateurs qui sont en congé durant l'année en cours
-        List<Collaborateur> collaborateursEnConge = collaborateurs.stream()
-                .filter(collaborateur -> congeService.isCollaborateurEnConge(collaborateur, LocalDate.now().withDayOfYear(1), LocalDate.now().withDayOfYear(LocalDate.now().lengthOfYear())))
-                .collect(Collectors.toList());
-
-        return mapCollaborateursToDTOs(collaborateursEnConge);
-    }
+//    @Override
+//    public int countCollaborateursEnCongeParEquipeEtPeriode(String nomEquipe, LocalDate dateStartCalenderie, LocalDate dateEndCalenderie) {
+//        UUID equipeCode = equipeService.findCodeEquipeByNom(nomEquipe);
+//        if (equipeCode == null) {
+//            throw new RessourceNotFoundException("Équipe introuvable avec le nom : " + nomEquipe);
+//        }
+//
+//        List<Collaborateur> collaborateurs = collaborateurRepository.findByEquipeCode(equipeCode);
+//        if (collaborateurs.isEmpty()) {
+//            throw new RessourceNotFoundException("Aucun collaborateur n'a été trouvé dans cette équipe.");
+//        }
+//
+//        long count = collaborateurs.stream()
+//                .filter(collaborateur -> congeService.isCollaborateurEnConge(collaborateur, dateStartCalenderie, dateEndCalenderie))
+//                .count();
+//
+//        return (int) count;
+//    }
+//
+//    @Override
+//    public List<CollaborateurDTO> findCollaborateursEnCongeParEquipeAnnee(String nomEquipe) {
+//        UUID equipeCode = equipeService.findCodeEquipeByNom(nomEquipe);
+//        if (equipeCode == null) {
+//            throw new RessourceNotFoundException("Équipe introuvable avec le nom : " + nomEquipe);
+//        }
+//
+//        List<Collaborateur> collaborateurs = collaborateurRepository.findByEquipeCode(equipeCode);
+//        if (collaborateurs.isEmpty()) {
+//            throw new RessourceNotFoundException("Aucun collaborateur n'a été trouvé dans cette équipe.");
+//        }
+//
+//        // Filtrer les collaborateurs qui sont en congé durant l'année en cours
+//        List<Collaborateur> collaborateursEnConge = collaborateurs.stream()
+//                .filter(collaborateur -> congeService.isCollaborateurEnConge(collaborateur, LocalDate.now().withDayOfYear(1), LocalDate.now().withDayOfYear(LocalDate.now().lengthOfYear())))
+//                .collect(Collectors.toList());
+//
+//        return mapCollaborateursToDTOs(collaborateursEnConge);
+//    }
 }

@@ -175,36 +175,36 @@ public class CollaborateurController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/count")
-    public ResponseEntity<ApiResponse<Integer>> countCollaborateursEnCongeParEquipeEtPeriode(
-            @RequestParam String nomEquipe,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateStartCalenderie,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateEndCalenderie) {
-
-        int count = collaborateurService.countCollaborateursEnCongeParEquipeEtPeriode(
-                nomEquipe, dateStartCalenderie, dateEndCalenderie);
-
-        ApiResponse<Integer> response = ApiResponse.<Integer>builder()
-                .message("Nombre de collaborateurs en congé trouvés")
-                .code(HttpStatus.OK.value())
-                .data(count)
-                .timestamp(LocalDateTime.now())
-                .build();
-        return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/en-conge")
-    public ResponseEntity<ApiResponse<List<CollaborateurDTO>>> findCollaborateursEnCongeParEquipeAnnee(
-            @RequestParam String nomEquipe) {
-
-        List<CollaborateurDTO> collaborateurs = collaborateurService.findCollaborateursEnCongeParEquipeAnnee(nomEquipe);
-
-        ApiResponse<List<CollaborateurDTO>> response = ApiResponse.<List<CollaborateurDTO>>builder()
-                .message("Collaborateurs de l'équipe " + nomEquipe + " en congé trouvés")
-                .code(HttpStatus.OK.value())
-                .data(collaborateurs)
-                .timestamp(LocalDateTime.now())
-                .build();
-        return ResponseEntity.ok(response);
-    }
+//    @GetMapping("/count")
+//    public ResponseEntity<ApiResponse<Integer>> countCollaborateursEnCongeParEquipeEtPeriode(
+//            @RequestParam String nomEquipe,
+//            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateStartCalenderie,
+//            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateEndCalenderie) {
+//
+//        int count = collaborateurService.countCollaborateursEnCongeParEquipeEtPeriode(
+//                nomEquipe, dateStartCalenderie, dateEndCalenderie);
+//
+//        ApiResponse<Integer> response = ApiResponse.<Integer>builder()
+//                .message("Nombre de collaborateurs en congé trouvés")
+//                .code(HttpStatus.OK.value())
+//                .data(count)
+//                .timestamp(LocalDateTime.now())
+//                .build();
+//        return ResponseEntity.ok(response);
+//    }
+//
+//    @GetMapping("/en-conge")
+//    public ResponseEntity<ApiResponse<List<CollaborateurDTO>>> findCollaborateursEnCongeParEquipeAnnee(
+//            @RequestParam String nomEquipe) {
+//
+//        List<CollaborateurDTO> collaborateurs = collaborateurService.findCollaborateursEnCongeParEquipeAnnee(nomEquipe);
+//
+//        ApiResponse<List<CollaborateurDTO>> response = ApiResponse.<List<CollaborateurDTO>>builder()
+//                .message("Collaborateurs de l'équipe " + nomEquipe + " en congé trouvés")
+//                .code(HttpStatus.OK.value())
+//                .data(collaborateurs)
+//                .timestamp(LocalDateTime.now())
+//                .build();
+//        return ResponseEntity.ok(response);
+//    }
 }

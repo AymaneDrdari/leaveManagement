@@ -400,8 +400,18 @@ public class CongeServiceImpl implements CongeService {
 
     @Override
     public List<CongeDetailDTO> findCongesByEquipe(String nomEquipe) {
+        logger.info("Recherche des congés pour l'équipe : {}", nomEquipe);
         List<Conge> conges = congeRepository.findByCollaborateur_Equipe_Nom(nomEquipe);
-        return conges.stream().map(this::mapToCongeDetailDTO).collect(Collectors.toList());
+
+        if (conges.isEmpty()) {
+            logger.warn("Aucun congé trouvé pour l'équipe : {}", nomEquipe);
+        }
+
+        List<CongeDetailDTO> congeDetailDTOS = conges.stream().map(this::mapToCongeDetailDTO).collect(Collectors.toList());
+
+        logger.info("Nombre de congés trouvés pour l'équipe {} : {}", nomEquipe, congeDetailDTOS.size());
+
+        return congeDetailDTOS;
     }
 
     private CongeDetailDTO mapToCongeDetailDTO(Conge conge) {
