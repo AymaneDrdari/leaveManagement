@@ -44,6 +44,7 @@ import { AddEditNiveauComponent } from './components/niveaux/add-edit-niveau/add
 import {NiveauListComponent} from "./components/niveaux/niveau-list/niveau-list.component";
 import {EquipeListComponent} from "./components/equipes/equipe-list/equipe-list.component";
 import { AddEditEquipeComponent } from './components/equipes/add-edit-equipe/add-edit-equipe.component';
+import { ColorPickerModule } from 'ngx-color-picker';
 
 @NgModule({
   declarations: [
@@ -94,7 +95,8 @@ import { AddEditEquipeComponent } from './components/equipes/add-edit-equipe/add
     MatSelectModule,
     MatOptionModule,
     MatRadioModule,
-    MatAutocompleteModule
+    MatAutocompleteModule,
+    ColorPickerModule
   ],
   providers: [],
   bootstrap: [AppComponent]

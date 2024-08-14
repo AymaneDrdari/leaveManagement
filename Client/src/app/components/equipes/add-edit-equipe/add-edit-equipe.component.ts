@@ -22,27 +22,57 @@ export class AddEditEquipeComponent {
     this.isEdit = !!data;
     this.equipeForm = this.fb.group({
       nom: [data?.nom || '', Validators.required],
-      code: [data?.code || ''],
-      description: [data?.description || '']
+      code: [{ value: data?.code || '', disabled: this.isEdit }],
+      description: [data?.description || ''],
+      couleur: ['', Validators.required] // Assurez-vous que ce champ est bien vide initialement et obligatoire
     });
+
   }
 
   onSave(): void {
     if (this.equipeForm.valid) {
       const equipe: EquipeDTO = this.equipeForm.value;
       if (this.isEdit && this.data) {
-        // Update existing equipe
+        // Mettre à jour l'équipe existante
         this.equipeService.updateEquipe(this.data.code, equipe).subscribe(() => {
-          this.dialogRef.close(equipe);
+          this.dialogRef.close(equipe); // Informer le parent de la mise à jour
         });
       } else {
-        // Add new equipe
+        // Ajouter une nouvelle équipe
         this.equipeService.addEquipe(equipe).subscribe(() => {
-          this.dialogRef.close(equipe);
+          this.dialogRef.close(equipe); // Informer le parent de l'ajout
         });
       }
     }
   }
+
+  onManualColorInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const colorPicker = document.getElementById('actualColorPicker') as HTMLInputElement;
+
+    // Mettre à jour la valeur du sélecteur de couleur pour refléter la saisie manuelle
+    colorPicker.value = input.value;
+  }
+
+  openColorPicker(): void {
+    const colorPicker = document.getElementById('actualColorPicker') as HTMLInputElement;
+    if (colorPicker) {
+      colorPicker.click();
+    }
+  }
+
+  onColorChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.equipeForm.patchValue({ couleur: input.value });
+
+    // Mettre à jour le champ de saisie avec la valeur du sélecteur de couleur
+    const colorInput = document.getElementById('colorPicker') as HTMLInputElement;
+    if (colorInput) {
+      colorInput.value = input.value;
+    }
+  }
+
+
 
   onCancel(): void {
     this.dialogRef.close();

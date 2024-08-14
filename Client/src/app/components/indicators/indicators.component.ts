@@ -10,7 +10,7 @@ import { LeaveService } from '../../services/leave.service';
 export class IndicatorsComponent implements OnInit {
   leaveCounts: { [key: string]: number } = {};  // Stocker le nombre de collaborateurs en congé par équipe
   constructor(private holidayService: HolidayService,
-              private leaveService: LeaveService) {}
+              private leaveService: LeaveService) { }
 
   activeCard: string = '';
 
@@ -19,13 +19,10 @@ export class IndicatorsComponent implements OnInit {
       this.activeCard = '';
     } else {
       this.activeCard = card;
-      if (card === 'holidays') {
-        this.holidayService.toggleHolidaysVisibility();
-        this.leaveService.setSelectedTeam("holidays");  // Déclenche la récupération des congés pour l'équipe sélectionnée
-      } else {
-        // console.log("selected team dans indicator componenet " , card)
-        this.leaveService.setSelectedTeam(card);  // Déclenche la récupération des congés pour l'équipe sélectionnée
-      }
+
+      // console.log("selected team dans indicator componenet " , card)
+      this.leaveService.setSelectedTeam(card);  // Déclenche la récupération des congés pour l'équipe sélectionnée
+
     }
   }
 
@@ -37,9 +34,9 @@ export class IndicatorsComponent implements OnInit {
     this.loadLeaveCounts();  // Charger le nombre de collaborateurs en congé au démarrage
   }
 
-  toggleHolidays(): void {
-    this.holidayService.toggleHolidaysVisibility();
-  }
+  //toggleHolidays(): void {
+  //this.holidayService.toggleHolidaysVisibility();
+  //}
 
   // Charger le nombre de collaborateurs en congé pour chaque équipe
   loadLeaveCounts(): void {

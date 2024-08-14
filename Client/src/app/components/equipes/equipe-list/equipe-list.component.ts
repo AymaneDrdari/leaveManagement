@@ -3,7 +3,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
 import { EquipeService } from '../../../services/equipe.service';
-import { AddEditEquipeComponent } from '../add-edit-equipe/add-edit-equipe.component'; // Assurez-vous que ce composant existe
+import { AddEditEquipeComponent } from '../add-edit-equipe/add-edit-equipe.component';
 import { EquipeDTO } from "../../../models/equipe.model";
 
 @Component({
@@ -12,13 +12,16 @@ import { EquipeDTO } from "../../../models/equipe.model";
   styleUrls: ['./equipe-list.component.css']
 })
 export class EquipeListComponent implements OnInit, AfterViewInit {
-  displayedColumns: string[] = ['index', 'nom', 'description', 'actions'];
-  // displayedColumns: string[] = ['index', 'nom', 'code', 'description', 'actions'];
+  // Colonnes affichées dans le tableau
+  displayedColumns: string[] = ['index', 'nom', 'description', 'couleur', 'actions'];
 
+  // Source de données pour le tableau
   dataSource = new MatTableDataSource<EquipeDTO>();
+
   showDeleteConfirmation = false;
   selectedEquipeCode: string | null = null;
 
+  // Paginator pour la pagination du tableau
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   constructor(
@@ -26,14 +29,17 @@ export class EquipeListComponent implements OnInit, AfterViewInit {
     public dialog: MatDialog
   ) { }
 
+  // Initialisation du composant
   ngOnInit(): void {
-    this.loadEquipes();
+    this.loadEquipes(); // Charger les équipes au démarrage
   }
 
+  // Configuration du paginator après l'initialisation de la vue
   ngAfterViewInit(): void {
     this.dataSource.paginator = this.paginator;
   }
 
+  // Charger la liste des équipes depuis le backend
   loadEquipes(): void {
     this.equipeService.getAllEquipes().subscribe(response => {
       this.dataSource.data = response; // Mise à jour des données du tableau
@@ -42,6 +48,7 @@ export class EquipeListComponent implements OnInit, AfterViewInit {
     });
   }
 
+  // Ouvrir le modal pour ajouter ou modifier une équipe
   openAddEditEquipeModal(equipe?: EquipeDTO): void {
     const dialogRef = this.dialog.open(AddEditEquipeComponent, {
       width: '700px',
@@ -50,20 +57,22 @@ export class EquipeListComponent implements OnInit, AfterViewInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.loadEquipes(); // Rafraîchissement des données après la fermeture du modal
+        this.loadEquipes(); // Rafraîchir la liste des équipes après l'ajout ou la mise à jour
       }
     });
   }
 
+  // Demander confirmation avant de supprimer une équipe
   deleteEquipe(code: string): void {
     this.showDeleteConfirmation = true;
     this.selectedEquipeCode = code;
   }
 
+  // Confirmer la suppression de l'équipe
   confirmDelete(): void {
     if (this.selectedEquipeCode !== null) {
       this.equipeService.deleteEquipe(this.selectedEquipeCode).subscribe(() => {
-        this.loadEquipes();
+        this.loadEquipes(); // Rafraîchir la liste des équipes après la suppression
         this.closeDeleteConfirmation();
       }, error => {
         console.error('Erreur lors de la suppression de l\'équipe:', error);
@@ -71,6 +80,7 @@ export class EquipeListComponent implements OnInit, AfterViewInit {
     }
   }
 
+  // Fermer la confirmation de suppression
   closeDeleteConfirmation(): void {
     this.showDeleteConfirmation = false;
     this.selectedEquipeCode = null;

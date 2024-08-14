@@ -4,10 +4,10 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Leave } from '../../../models/leave';
 import { LeaveService } from '../../../services/leave.service';
 import { Collaborateur } from '../../../models/collaborateur';
-import { CollaboratorService } from '../../../services/collaborator.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ApiResponse } from '../../../models/ApiResponse';
+import {CollaborateurService} from "../../../services/collaborateur.service";
 
 @Component({
   selector: 'app-add-edit-leave',
@@ -25,7 +25,7 @@ export class AddEditLeaveComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     public dialogRef: MatDialogRef<AddEditLeaveComponent>,
     @Inject(MAT_DIALOG_DATA) public data: Leave,
-    private collaborateurService: CollaboratorService,
+    private collaborateurService: CollaborateurService,
     private leaveService: LeaveService
   ) {
     this.isEdit = !!data.id_conge;

@@ -3,4 +3,5 @@ export interface EquipeDTO {
   nom: string;
   description?: string;  // Facultatif
   dateCreation?: Date;   // Facultatif
+  couleur: string;
 }
