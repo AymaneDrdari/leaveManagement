@@ -6,6 +6,7 @@ import net.pfe.dto.collab.CollaborateurDTO;
 import net.pfe.entity.Collaborateur;
 import net.pfe.entity.Equipe;
 import net.pfe.entity.Niveau;
+import net.pfe.entity.enums.RoleCollaborateur;
 import net.pfe.exception.RessourceAlreadyExistsException;
 import net.pfe.exception.RessourceNotFoundException;
 import net.pfe.repository.CollaborateurRepository;
@@ -224,6 +225,26 @@ public class CollaborateurServiceImpl implements CollaborateurService {
         return mapCollaborateursToDTOs(collaborateurs);
     }
 
+//    @Override
+//    public List<CollaborateurDTO> findCollaborateursEnCongeParEquipeEtPeriode(String nomEquipe, LocalDate dateStartCalenderie, LocalDate dateEndCalenderie) {
+//        UUID equipeCode = equipeService.findCodeEquipeByNom(nomEquipe);
+//        if (equipeCode == null) {
+//            throw new RessourceNotFoundException("Équipe introuvable avec le nom : " + nomEquipe);
+//        }
+//
+//        List<Collaborateur> collaborateurs = collaborateurRepository.findByEquipeCode(equipeCode);
+//        if (collaborateurs.isEmpty()) {
+//            throw new RessourceNotFoundException("Aucun collaborateur n'a été trouvé dans cette équipe.");
+//        }
+//
+//        // Filtrer les collaborateurs qui sont en congé durant la période donnée
+//        List<Collaborateur> collaborateursEnConge = collaborateurs.stream()
+//                .filter(collaborateur -> congeService.isCollaborateurEnConge(collaborateur, dateStartCalenderie, dateEndCalenderie))
+//                .collect(Collectors.toList());
+//
+//        return mapCollaborateursToDTOs(collaborateursEnConge);
+//    }
+
     @Override
     public List<CollaborateurDTO> findCollaborateursEnCongeParEquipeEtPeriode(String nomEquipe, LocalDate dateStartCalenderie, LocalDate dateEndCalenderie) {
         UUID equipeCode = equipeService.findCodeEquipeByNom(nomEquipe);
@@ -241,8 +262,10 @@ public class CollaborateurServiceImpl implements CollaborateurService {
                 .filter(collaborateur -> congeService.isCollaborateurEnConge(collaborateur, dateStartCalenderie, dateEndCalenderie))
                 .collect(Collectors.toList());
 
+        // Convertir les entités en DTOs
         return mapCollaborateursToDTOs(collaborateursEnConge);
     }
+
 
 //    @Override
 //    public int countCollaborateursEnCongeParEquipeEtPeriode(String nomEquipe, LocalDate dateStartCalenderie, LocalDate dateEndCalenderie) {
@@ -282,4 +305,28 @@ public class CollaborateurServiceImpl implements CollaborateurService {
 //
 //        return mapCollaborateursToDTOs(collaborateursEnConge);
 //    }
+
+
+
+    //pour email:
+//    @Override
+//    public List<CollaborateurDTO> getCollaborateursEnConge(LocalDate date) {
+//        return collaborateurRepository.findAll().stream()
+//                .filter(collaborateur -> collaborateur.getConges().stream()
+//                        .anyMatch(conge -> !conge.getDateDebut().isAfter(date) && !conge.getDateFin().isBefore(date)))
+//                .map(this::mapCollaborateurToDTO)
+//                .collect(Collectors.toList());
+//    }
+//
+//
+//    @Override
+//    public List<String> getChefsEquipeEmails(String equipe) {
+//        return collaborateurRepository.findByEquipe_NomAndRole(equipe, RoleCollaborateur.CHEF_EQUIPE).stream()
+//                .map(Collaborateur::getEmail)
+//                .collect(Collectors.toList());
+//    }
+
+
+
+
 }

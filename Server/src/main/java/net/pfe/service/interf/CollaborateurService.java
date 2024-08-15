@@ -36,4 +36,9 @@ public interface CollaborateurService {
 
 
     //List<CollaborateurDTO> findCollaborateursEnCongeParEquipeAnnee(String nomEquipe);
+
+    //pour email 2 methode:
+    //List<CollaborateurDTO> getCollaborateursEnConge(LocalDate date);
+    //List<String> getChefsEquipeEmails(String equipe);
+
 }

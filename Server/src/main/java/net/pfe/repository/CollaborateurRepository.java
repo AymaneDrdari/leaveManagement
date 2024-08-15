@@ -1,6 +1,7 @@
 package net.pfe.repository;
 
 import net.pfe.entity.Collaborateur;
+import net.pfe.entity.enums.RoleCollaborateur;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -23,6 +24,10 @@ public interface CollaborateurRepository extends JpaRepository<Collaborateur, UU
 
     List<Collaborateur> findByNomIgnoreCaseOrPrenomIgnoreCase(String nom, String prenom);
     List<Collaborateur> findByNomStartingWithIgnoreCaseOrPrenomStartingWithIgnoreCase(String nom, String prenom);
+
+
+   // pour email:
+  //  List<Collaborateur> findByEquipe_NomAndRole(String equipeNom, RoleCollaborateur role);
 
 
 }

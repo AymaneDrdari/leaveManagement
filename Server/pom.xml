@@ -96,7 +96,10 @@
 			<artifactId>slf4j-api</artifactId>
 			<version>${slf4j.version}</version>
 		</dependency>
-
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
 		<!-- Logback (ou tout autre fournisseur de journalisation) -->
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
