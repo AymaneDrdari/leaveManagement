@@ -5,7 +5,6 @@ import { catchError } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { Leave } from '../models/leave';
 import { ApiResponse } from '../models/ApiResponse';
-import {Holiday} from "../models/holiday";
 import {Collaborateur} from "../models/collaborateur";
 import {CongeDetailDTO} from "../models/conge-detail-dto.model";
 
@@ -18,8 +17,8 @@ export class LeaveService {
   private selectedTeamSubject = new BehaviorSubject<string | null>(null);
   selectedTeam$ = this.selectedTeamSubject.asObservable();
 
-  private leavesVisibleSubject = new BehaviorSubject<boolean>(true);
-  holidaysVisible$ = this.leavesVisibleSubject.asObservable();
+  // private leavesVisibleSubject = new BehaviorSubject<boolean>(true);
+  // holidaysVisible$ = this.leavesVisibleSubject.asObservable();
 
   // Nouveau Subject pour notifier les mises à jour de congés
   private leavesUpdatedSubject = new Subject<void>();
@@ -36,10 +35,6 @@ export class LeaveService {
     this.selectedTeamSubject.next(team);
   }
 
-  toggleLeavesVisibility(): void {
-    const currentState = this.leavesVisibleSubject.value;
-    this.leavesVisibleSubject.next(!currentState);
-  }
 
   // Méthode pour récupérer tous les congés
   getConges(): Observable<ApiResponse<Leave[]>> {
@@ -53,8 +48,12 @@ export class LeaveService {
       params: { nomEquipe }
     }).pipe(catchError(this.handleError));
   }
+  countCollaborateursEnCongeParEquipe(nomEquipe: string, startDate: string, endDate: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/count-by-period?nomEquipe=${nomEquipe}&startDate=${startDate}&endDate=${endDate}`)
+      .pipe(catchError(this.handleError));
+  }
 
-  getCongesByEquipe(nomEquipe: string): Observable<ApiResponse<CongeDetailDTO[]>> {
+    getCongesByEquipe(nomEquipe: string): Observable<ApiResponse<CongeDetailDTO[]>> {
     return this.http.get<ApiResponse<CongeDetailDTO[]>>(`${this.apiUrl}/equipe`, {
       params: { nomEquipe }
     });

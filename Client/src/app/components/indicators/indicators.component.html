@@ -1,4 +1,20 @@
 <div class="indicators">
+
+  <mat-card class="indicator-card "  *ngFor="let team of teams" (click)="toggleActiveCard(team.id)"
+            [ngStyle]="{'background-color': team.couleur}" [ngClass]="{ 'background-color':'team.couleur' ,'hovered': isHovered(team.id), 'active': isActiveCard(team.id) }">
+    <mat-card-content>
+      <mat-icon>people</mat-icon>
+      <h3>{{ team.nom }}</h3>
+<!--      <h2>{{ teamCounts[team.nom] || 0 }}</h2>-->
+    </mat-card-content>
+  </mat-card>
+
+
+
+
+
+
+
   <mat-card class="indicator-card royal" (click)="toggleActiveCard('royal')"
             [ngClass]="{ 'hovered': isHovered('royal'), 'active': isActiveCard('royal') }">
     <mat-card-content>
@@ -35,3 +51,15 @@
     </mat-card-content>
   </mat-card>
 </div>
+
+<!--<div class="indicators">-->
+<!--  <mat-card *ngFor="let equipe of equipes" class="indicator-card" [ngStyle]="{'background-color': equipe.couleur}"-->
+<!--            (click)="toggleActiveCard(equipe.nom)"-->
+<!--            [ngClass]="{ 'hovered': isHovered(equipe.nom), 'active': isActiveCard(equipe.nom) }">-->
+<!--    <mat-card-content>-->
+<!--      <mat-icon>people</mat-icon>-->
+<!--      <h3>{{ equipe.nom }}</h3>-->
+<!--      <p>{{ leaveCounts[equipe.nom] }}</p>-->
+<!--    </mat-card-content>-->
+<!--  </mat-card>-->
+<!--</div>-->
