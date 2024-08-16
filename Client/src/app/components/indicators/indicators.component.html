@@ -1,65 +1,11 @@
 <div class="indicators">
-
-  <mat-card class="indicator-card "  *ngFor="let team of teams" (click)="toggleActiveCard(team.id)"
-            [ngStyle]="{'background-color': team.couleur}" [ngClass]="{ 'background-color':'team.couleur' ,'hovered': isHovered(team.id), 'active': isActiveCard(team.id) }">
+  <mat-card *ngFor="let equipe of equipes" class="indicator-card" [ngStyle]="{'background-color': equipe.couleur}"
+            (click)="toggleActiveCard(equipe.nom)"
+            [ngClass]="{ 'hovered': isHovered(equipe.nom), 'active': isActiveCard(equipe.nom) }">
     <mat-card-content>
       <mat-icon>people</mat-icon>
-      <h3>{{ team.nom }}</h3>
-<!--      <h2>{{ teamCounts[team.nom] || 0 }}</h2>-->
-    </mat-card-content>
-  </mat-card>
-
-
-
-
-
-
-
-  <mat-card class="indicator-card royal" (click)="toggleActiveCard('royal')"
-            [ngClass]="{ 'hovered': isHovered('royal'), 'active': isActiveCard('royal') }">
-    <mat-card-content>
-      <mat-icon>people</mat-icon>
-      <h3>Équipe Royal</h3>
-      <p>{{ leaveCounts['royal'] }}</p>
-    </mat-card-content>
-  </mat-card>
-
-  <mat-card class="indicator-card gold" (click)="toggleActiveCard('gold')"
-            [ngClass]="{ 'hovered': isHovered('gold'), 'active': isActiveCard('gold') }">
-    <mat-card-content>
-      <mat-icon>people</mat-icon>
-      <h3>Équipe Gold</h3>
-      <p>{{ leaveCounts['gold'] }}</p>
-    </mat-card-content>
-  </mat-card>
-
-  <mat-card class="indicator-card mauve" (click)="toggleActiveCard('mauve')"
-            [ngClass]="{ 'hovered': isHovered('mauve'), 'active': isActiveCard('mauve') }">
-    <mat-card-content>
-      <mat-icon>people</mat-icon>
-      <h3>Équipe Mauve</h3>
-      <p>{{ leaveCounts['mauve'] }}</p>
-    </mat-card-content>
-  </mat-card>
-
-  <mat-card class="indicator-card blue" (click)="toggleActiveCard('blue')"
-            [ngClass]="{ 'hovered': isHovered('blue'), 'active': isActiveCard('blue') }">
-    <mat-card-content>
-      <mat-icon>people</mat-icon>
-      <h3>Équipe Blue</h3>
-      <p>{{ leaveCounts['blue'] }}</p>
+      <h3>{{ equipe.nom }}</h3>
+      <p>{{ leaveCounts[equipe.nom] }}</p>
     </mat-card-content>
   </mat-card>
 </div>
-
-<!--<div class="indicators">-->
-<!--  <mat-card *ngFor="let equipe of equipes" class="indicator-card" [ngStyle]="{'background-color': equipe.couleur}"-->
-<!--            (click)="toggleActiveCard(equipe.nom)"-->
-<!--            [ngClass]="{ 'hovered': isHovered(equipe.nom), 'active': isActiveCard(equipe.nom) }">-->
-<!--    <mat-card-content>-->
-<!--      <mat-icon>people</mat-icon>-->
-<!--      <h3>{{ equipe.nom }}</h3>-->
-<!--      <p>{{ leaveCounts[equipe.nom] }}</p>-->
-<!--    </mat-card-content>-->
-<!--  </mat-card>-->
-<!--</div>-->

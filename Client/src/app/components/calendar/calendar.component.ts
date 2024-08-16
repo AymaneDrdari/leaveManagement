@@ -13,6 +13,8 @@ import { Holiday } from '../../models/holiday';
 import { CongeDetailDTO } from "../../models/conge-detail-dto.model";
 import { AddEditLeaveComponent } from '../leave/add-edit-leave/add-edit-leave.component';
 import { AddEditHolidayComponent } from '../holiday/add-edit-holiday/add-edit-holiday.component';
+import {EquipeService} from "../../services/equipe.service";
+import {EquipeDTO} from "../../models/equipe.model";
 
 @Component({
   selector: 'app-calendar',
@@ -50,6 +52,7 @@ export class CalendarComponent implements OnInit, OnDestroy, AfterViewInit {
   constructor(
     private holidayService: HolidayService,
     private leaveService: LeaveService,
+    private equipeService:EquipeService,
     public dialog: MatDialog,
   ) { }
 
@@ -79,9 +82,15 @@ export class CalendarComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   // Charger les congés de toutes les équipes au démarrage
   loadAllTeamsLeaves(): void {
-    const teams = ['royal', 'gold', 'mauve', 'blue'];  // Liste des équipes
-    this.selectedTeams = [...teams];  // Sélectionner toutes les équipes au démarrage
-    this.updateCalendarEvents();  // Mettre à jour les événements du calendrier
+    this.equipeService.getAllEquipes().subscribe(
+      (equipes: EquipeDTO[]) => {
+        this.selectedTeams = equipes.map(equipe => equipe.nom); // Suppose que 'nom' est la propriété du nom d'équipe
+        this.updateCalendarEvents();
+      },
+      error => {
+        console.error('Error fetching teams:', error);
+      }
+    );
   }
 
   updateCalendarEvents(): void {
