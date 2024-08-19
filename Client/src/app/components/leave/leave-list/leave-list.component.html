@@ -8,7 +8,6 @@
         Déclarer un congé
       </button>
     </div>
-
     <div class="table-container">
       <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 holiday-table">
         <ng-container matColumnDef="index">
@@ -57,8 +56,27 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
     </div>
+    <!-- MatPaginator for pagination control -->
+    <nav aria-label="Page navigation example" class="pagination-nav">
+      <ul class="pagination">
+        <li class="page-item" [class.disabled]="currentPage === 0">
+          <button mat-raised-button color="primary" (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 0">
+            Précédent
+          </button>
+        </li>
+        <li class="page-item" *ngFor="let page of paginationArray()" [class.active]="page === currentPage">
+          <button mat-raised-button color="primary" (click)="onPageChange(page)">
+            {{ page + 1 }}
+          </button>
+        </li>
+        <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
+          <button mat-raised-button color="primary" (click)="onPageChange(currentPage + 1)" [disabled]="currentPage === totalPages - 1">
+            Suivant
+          </button>
+        </li>
+      </ul>
+    </nav>
 
-    <mat-paginator [length]="dataSource.data.length" [pageSize]="5" [pageSizeOptions]="[5, 10, 25]" aria-label="Select page"></mat-paginator>
   </div>
 </div>
 

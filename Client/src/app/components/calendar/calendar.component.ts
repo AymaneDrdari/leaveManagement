@@ -94,52 +94,49 @@ export class CalendarComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   updateCalendarEvents(): void {
-    this.calendarEvents = [...this.holidays];  // Inclure toujours les jours fériés
-
+    this.calendarEvents = [...this.holidays];
     if (this.selectedTeams.length > 0) {
       const fetchedTeams = new Set<string>();
+      const startYear = new Date().getFullYear() - 5;
+      const endYear = new Date().getFullYear();
 
       this.selectedTeams.forEach(team => {
-        this.leaveService.getCongesByEquipe(team).subscribe((leaveResponse: ApiResponse<CongeDetailDTO[]>) => {
-          if (leaveResponse && leaveResponse.data) {
-            const leaves = leaveResponse.data.map(congeDetail => {
-              const dateStart = new Date(congeDetail.date_debut);
-              const dateEnd = new Date(congeDetail.date_fin);
-              dateEnd.setDate(dateEnd.getDate() + 1); // Inclure la fin de la journée
-              return {
-                title: `${congeDetail.collaborateur_nom} ${congeDetail.collaborateur_prenom}`,
-                start: dateStart.toISOString().split('T')[0],
-                end: dateEnd.toISOString().split('T')[0],
-                color: congeDetail.couleur_equipe || '#000000',
-                extendedProps: congeDetail
-              };
-            }).filter(event => event.start && event.end);
+        for (let year = startYear; year <= endYear; year++) {
+          this.leaveService.getCongesByEquipe(team, year).subscribe((leaveResponse: ApiResponse<CongeDetailDTO[]>) => {
+            if (leaveResponse && leaveResponse.data) {
+              const leaves = leaveResponse.data.map(congeDetail => {
+                const dateStart = new Date(congeDetail.date_debut);
+                const dateEnd = new Date(congeDetail.date_fin);
+                dateEnd.setDate(dateEnd.getDate() + 1);
+                return {
+                  title: `${congeDetail.collaborateur_nom} ${congeDetail.collaborateur_prenom}`,
+                  start: dateStart.toISOString().split('T')[0],
+                  end: dateEnd.toISOString().split('T')[0],
+                  color: congeDetail.couleur_equipe || '#000000',
+                  extendedProps: congeDetail
+                };
+              }).filter(event => event.start && event.end);
 
-            // Ajouter les événements si l'équipe n'a pas déjà été traitée
-            if (!fetchedTeams.has(team)) {
-              this.calendarEvents.push(...leaves);
-              fetchedTeams.add(team);
+              if (!fetchedTeams.has(`${team}-${year}`)) {
+                this.calendarEvents.push(...leaves);
+                fetchedTeams.add(`${team}-${year}`);
+              }
+              this.updateCalendarWithEvents();
             }
-
-            // Mettre à jour le calendrier avec les événements combinés
-            this.updateCalendarWithEvents();
-          }
-        });
+          });
+        }
       });
     } else {
-      this.updateCalendarWithEvents();  // Afficher uniquement les jours fériés si aucune équipe n'est sélectionnée
+      this.updateCalendarWithEvents();
     }
   }
 
   updateCalendarWithEvents(): void {
     const uniqueEvents = Array.from(new Set(this.calendarEvents.map(e => JSON.stringify(e))))
       .map(e => JSON.parse(e));
-
-    this.calendarOptions = {
-      ...this.calendarOptions,
-      events: uniqueEvents  // Mettre à jour les événements dans le calendrier
-    };
+    this.calendarOptions = { ...this.calendarOptions, events: uniqueEvents };
   }
+
 
   setActiveCard(card: string | null) {
     if (card) {
@@ -212,6 +209,7 @@ export class CalendarComponent implements OnInit, OnDestroy, AfterViewInit {
 
 
   handleDatesSet(arg: DatesSetArg): void {
+    // Si vous souhaitez charger les jours fériés pour chaque année visible
     const startYear = arg.start.getFullYear();
     const endYear = arg.end.getFullYear();
 
@@ -219,6 +217,8 @@ export class CalendarComponent implements OnInit, OnDestroy, AfterViewInit {
     for (let year = startYear; year <= endYear; year++) {
       this.fetchHolidays(year);
     }
+
+    this.updateCalendarEvents();
   }
 
 
@@ -245,12 +245,21 @@ export class CalendarComponent implements OnInit, OnDestroy, AfterViewInit {
         data: { date_debut: this.clickedDate, date_fin: this.clickedDate }
       });
     } else if (action === 'addHoliday') {
-      this.dialog.open(AddEditHolidayComponent, {
+      const dialogRef = this.dialog.open(AddEditHolidayComponent, {
         width: '500px',
         data: { date_debut: this.clickedDate, date_fin: this.clickedDate }
       });
+
+      // Ajoutez un callback pour mettre à jour les jours fériés après la fermeture du dialog
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          // Mettez à jour les jours fériés avec les nouvelles données
+          this.fetchHolidays(new Date().getFullYear());
+        }
+      });
     }
   }
+
 
   onDocumentClick(event: MouseEvent): void {
     if (!this.contextMenuRef || !this.contextMenuRef.nativeElement) {

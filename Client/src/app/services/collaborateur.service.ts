@@ -44,11 +44,6 @@ export class CollaborateurService {
       .pipe(catchError(this.handleError));
   }
 
-  findAllCollaborateurs(page: number, size: number): Observable<ApiResponse<Collaborateur[]>> {
-    return this.http.get<ApiResponse<Collaborateur[]>>(`${this.apiUrl}?page=${page}&size=${size}`)
-      .pipe(catchError(this.handleError));
-  }
-
   getCollaborateursPage(page: number, size: number): Observable<ApiResponse<Collaborateur[]>> {
     return this.http.get<ApiResponse<Collaborateur[]>>(`${this.apiUrl}?page=${page}&size=${size}`)
       .pipe(catchError(this.handleError));

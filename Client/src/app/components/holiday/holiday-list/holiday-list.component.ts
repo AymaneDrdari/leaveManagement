@@ -6,7 +6,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { HolidayService } from "../../../services/holiday.service";
 import { AfterViewInit, Component, OnInit, ViewChild } from "@angular/core";
 import { MatTableDataSource } from "@angular/material/table";
-import { MatPaginator } from "@angular/material/paginator";
+import {MatPaginator, PageEvent} from "@angular/material/paginator";
 
 @Component({
   selector: 'app-holiday-list',
@@ -20,7 +20,7 @@ export class HolidayListComponent implements OnInit, AfterViewInit {
   selectedHolidayId: string | null = null;
   errorMessage: string | null = null;
   holidays: Holiday[] = [];
-  pageSize = 5; // Taille de page par défaut
+  pageSize = 6; // Taille de page par défaut
   currentPage = 0; // Page actuelle
   totalItems = 0; // Nombre total d'éléments
 
@@ -116,5 +116,6 @@ export class HolidayListComponent implements OnInit, AfterViewInit {
   paginationArray(): number[] {
     return Array.from({ length: this.totalPages }, (_, i) => i);
   }
+
 
 }

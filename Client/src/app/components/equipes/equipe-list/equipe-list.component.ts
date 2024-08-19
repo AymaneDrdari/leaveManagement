@@ -85,4 +85,5 @@ export class EquipeListComponent implements OnInit, AfterViewInit {
     this.showDeleteConfirmation = false;
     this.selectedEquipeCode = null;
   }
+
 }

@@ -36,7 +36,7 @@ export class AddEditLeaveComponent implements OnInit, OnDestroy {
       date_debut: [data.date_debut || '', Validators.required],
       date_fin: [data.date_fin || '', Validators.required],
       collaborateur_email: [data.collaborateur_email || '', Validators.required],
-      description: [data.description || '', Validators.required],
+      description: [data.description || ''],
       nombreJoursPris: [data.nombre_jours_pris || 0],
       demi_journee_matin: [data.demi_journee_matin || false],
       demi_journee_soir: [data.demi_journee_soir || false],
