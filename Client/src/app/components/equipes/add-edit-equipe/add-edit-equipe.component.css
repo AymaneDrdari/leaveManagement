@@ -53,8 +53,8 @@ textarea {
 
 #actualColorPicker {
   position: absolute;
-  top: 50%; /* Aligne verticalement avec l'icône */
-  right: 40px; /* Ajustez cette valeur pour positionner à côté de l'icône */
+  top: 50%;
+  right: 40px; /* Adjust this value to position next to the icon */
   transform: translateY(-50%);
   z-index: 1000;
   background-color: white;
@@ -63,6 +63,12 @@ textarea {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 5px;
 }
+
+.mat-icon-button {
+  position: relative; /* Ensures the icon stays in place */
+  z-index: 1; /* Ensure the icon is above the color picker */
+}
+
 
 input::placeholder {
   color: #aaa;
