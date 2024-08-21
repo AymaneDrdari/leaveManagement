@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
+import {Component, OnInit, OnDestroy, ElementRef, ViewChild, AfterViewInit, EventEmitter, Output} from '@angular/core';
 import { CalendarOptions, EventClickArg, DatesSetArg } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -26,6 +26,11 @@ export class CalendarComponent implements OnInit, OnDestroy, AfterViewInit {
   selectedTeams: string[] = [];  // Liste des équipes sélectionnées
   teamSubscription?: Subscription;
   holidays: any[] = [];
+  currentMonth: number;
+  currentYear: number;
+  leaveCounts: { [key: string]: number } = {};
+  equipes: EquipeDTO[] = [];
+  private selectedDateSubscription!: Subscription;
   contextMenuX: number = 0;
   contextMenuY: number = 0;
   showContextMenu: boolean = false;
@@ -54,7 +59,11 @@ export class CalendarComponent implements OnInit, OnDestroy, AfterViewInit {
     private leaveService: LeaveService,
     private equipeService:EquipeService,
     public dialog: MatDialog,
-  ) { }
+  ) {
+    const date = new Date();
+    this.currentMonth = date.getMonth() + 1; // Current month
+    this.currentYear = date.getFullYear(); // Current year
+  }
 
   ngOnInit(): void {
     this.teamSubscription = this.leaveService.selectedTeam$.subscribe(team => {
@@ -63,12 +72,13 @@ export class CalendarComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.leaveService.leavesUpdated$.subscribe(() => {
       this.updateCalendarEvents(); // Mise à jour des événements du calendrier
+      //this.loadLeaveCounts(this.currentMonth, this.currentYear); // Mettre à jour les comptes de congés ici
     });
 
-    const currentYear = new Date().getFullYear();
-    this.fetchHolidays(currentYear); // Charger les jours fériés pour l'année en cours
-    this.loadAllTeamsLeaves();  // Charger les congés de toutes les équipes au démarrage
+    this.loadAllTeamsLeaves();
+    this.fetchHolidays(this.currentYear); // Charger les jours fériés
   }
+
 
   ngAfterViewInit(): void {
     document.addEventListener('click', this.onDocumentClick.bind(this));
@@ -80,6 +90,31 @@ export class CalendarComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     document.removeEventListener('click', this.onDocumentClick.bind(this));
   }
+
+  // loadLeaveCounts(mois: number, annee: number): void {
+  //   // Réinitialiser les comptes avant de charger les nouveaux
+  //   this.leaveCounts = {};
+  //
+  //   this.selectedTeams.forEach(equipe => {
+  //     this.leaveService.getCountCollaborateursEnConge(equipe, mois, annee)
+  //       .subscribe(
+  //         (response) => {
+  //           if (response && response.data !== undefined) {
+  //
+  //             this.leaveCounts[equipe] = response.data || 0; // Mettre à jour le compte avec la donnée reçue
+  //           } else {
+  //             this.leaveCounts[equipe] = 0; // Initialiser à 0 en cas de données manquantes
+  //           }
+  //         },
+  //         (error) => {
+  //           console.error(`Erreur lors de la récupération du nombre de congés pour l'équipe ${equipe}:`, error);
+  //           this.leaveCounts[equipe] = 0; // Initialiser à 0 en cas d'erreur
+  //         }
+  //       );
+  //   });
+  // }
+
+
   // Charger les congés de toutes les équipes au démarrage
   loadAllTeamsLeaves(): void {
     this.equipeService.getAllEquipes().subscribe(
@@ -134,8 +169,10 @@ export class CalendarComponent implements OnInit, OnDestroy, AfterViewInit {
   updateCalendarWithEvents(): void {
     const uniqueEvents = Array.from(new Set(this.calendarEvents.map(e => JSON.stringify(e))))
       .map(e => JSON.parse(e));
+    //console.log('Unique calendar events:', uniqueEvents); // Vérifiez les événements uniques
     this.calendarOptions = { ...this.calendarOptions, events: uniqueEvents };
   }
+
 
 
   setActiveCard(card: string | null) {
@@ -200,6 +237,8 @@ export class CalendarComponent implements OnInit, OnDestroy, AfterViewInit {
 
           this.updateCalendarEvents(); // Mettre à jour les événements avec les jours fériés
         }
+        // Appeler ici loadLeaveCounts pour mettre à jour les comptes après avoir chargé les jours fériés
+        //this.loadLeaveCounts(this.currentMonth, this.currentYear);
       },
       error => {
         console.error('Error fetching holidays:', error);
@@ -209,17 +248,24 @@ export class CalendarComponent implements OnInit, OnDestroy, AfterViewInit {
 
 
   handleDatesSet(arg: DatesSetArg): void {
-    // Si vous souhaitez charger les jours fériés pour chaque année visible
-    const startYear = arg.start.getFullYear();
-    const endYear = arg.end.getFullYear();
+    // Récupérer l'année et le mois actuels basés sur les dates visibles dans le calendrier
+    const year = arg.start.getFullYear();
+    const month = arg.start.getMonth() + 1;
+    this.currentYear = year;
+    this.currentMonth = month;
 
     // Charger les jours fériés pour chaque année visible
-    for (let year = startYear; year <= endYear; year++) {
-      this.fetchHolidays(year);
-    }
+    this.fetchHolidays(this.currentYear);
+
+    // Charger les comptes de congés pour le mois et l'année actuels
+    //this.loadLeaveCounts(this.currentMonth, this.currentYear);
 
     this.updateCalendarEvents();
+
+    const formattedDate = `${year}-${month.toString().padStart(2, '0')}`;
+    this.leaveService.setSelectedDate(formattedDate);
   }
+
 
 
   handleEventClick(arg: EventClickArg): void {
@@ -235,7 +281,11 @@ export class CalendarComponent implements OnInit, OnDestroy, AfterViewInit {
     this.contextMenuX = arg.jsEvent.clientX;
     this.contextMenuY = arg.jsEvent.clientY;
     this.showContextMenu = true;
+    // this.leaveService.setSelectedDate(arg.dateStr);
+    //this.loadLeaveCounts(this.currentMonth, this.currentYear); // Ensure leave counts are updated based on selected date
+
   }
+
 
   handleContextMenuAction(action: string): void {
     this.showContextMenu = false;
@@ -260,7 +310,6 @@ export class CalendarComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-
   onDocumentClick(event: MouseEvent): void {
     if (!this.contextMenuRef || !this.contextMenuRef.nativeElement) {
       return; // Ne fait rien si `contextMenuRef` n'est pas défini
@@ -271,4 +320,5 @@ export class CalendarComponent implements OnInit, OnDestroy, AfterViewInit {
       this.showContextMenu = false;
     }
   }
+
 }
