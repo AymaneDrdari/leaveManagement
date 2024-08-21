@@ -64,26 +64,8 @@
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
 
-    <nav aria-label="Page navigation example" class="pagination-nav">
-      <ul class="pagination">
-        <li class="page-item" [class.disabled]="currentPage === 0">
-          <button mat-raised-button color="primary" (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 0">
-            Précédent
-          </button>
-        </li>
-        <li class="page-item" *ngFor="let page of paginationArray()" [class.active]="page === currentPage">
-          <button mat-raised-button color="primary" (click)="onPageChange(page)">
-            {{ page + 1 }}
-          </button>
-        </li>
-        <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
-          <button mat-raised-button color="primary" (click)="onPageChange(currentPage + 1)" [disabled]="currentPage === totalPages - 1">
-            Suivant
-          </button>
-        </li>
-      </ul>
-    </nav>
-     </div>
+    <mat-paginator [length]="totalItems" [pageSize]="pageSize" [pageSizeOptions]="[5, 10, 20]" (page)="onPageChange($event)" aria-label="Pagination"></mat-paginator>
+  </div>
 </div>
 
 <div *ngIf="showDeleteConfirmation" class="delete-confirmation-overlay">

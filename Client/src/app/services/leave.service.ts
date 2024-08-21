@@ -16,8 +16,8 @@ export class LeaveService {
 
   private selectedTeamSubject = new BehaviorSubject<string | null>(null);
   selectedTeam$ = this.selectedTeamSubject.asObservable();
-
-
+  private selectedDateSubject = new BehaviorSubject<string | null>(null);
+  selectedDate$ = this.selectedDateSubject.asObservable();
   // Nouveau Subject pour notifier les mises à jour de congés
   private leavesUpdatedSubject = new Subject<void>();
   leavesUpdated$ = this.leavesUpdatedSubject.asObservable();
@@ -29,6 +29,13 @@ export class LeaveService {
   constructor(private http: HttpClient) { }
 
 
+  // Méthode pour mettre à jour la date sélectionnée
+  setSelectedDate(date: string): void {
+    this.selectedDateSubject.next(date);
+  }
+
+
+
   setSelectedTeam(team: string): void {
     this.selectedTeamSubject.next(team);
   }
@@ -36,18 +43,12 @@ export class LeaveService {
 
   // Méthode pour récupérer tous les congés
 
-  // Nouvelle méthode pour obtenir le nombre de collaborateurs en congé par équipe
-  getCountCollaborateursEnConge(nomEquipe: string): Observable<ApiResponse<number>> {
+  getCountCollaborateursEnConge(nomEquipe: string, mois: number, annee: number): Observable<ApiResponse<number>> {
     return this.http.get<ApiResponse<number>>(`${this.apiUrl}/count`, {
-      params: { nomEquipe }
+      params: { nomEquipe, annee: annee.toString(), mois: mois.toString() } // Convertir en chaîne de caractères
     }).pipe(catchError(this.handleError));
   }
 
-  //   getCongesByEquipe(nomEquipe: string): Observable<ApiResponse<CongeDetailDTO[]>> {
-  //   return this.http.get<ApiResponse<CongeDetailDTO[]>>(`${this.apiUrl}/equipe`, {
-  //     params: { nomEquipe }
-  //   });
-  // }
   getCongesByEquipe(nomEquipe: string, annee: number): Observable<ApiResponse<CongeDetailDTO[]>> {
     const params = new HttpParams()
       .set('nomEquipe', nomEquipe)
