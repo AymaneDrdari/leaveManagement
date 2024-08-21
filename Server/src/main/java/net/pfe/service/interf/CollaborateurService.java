@@ -31,14 +31,13 @@ public interface CollaborateurService {
     // boolean collaborateurExistsByEmail(String email);
 
     List<CollaborateurDTO> findCollaborateursBySearch(String search);
-    List<CollaborateurDTO> findCollaborateursEnCongeParEquipeEtPeriode(String nomEquipe, LocalDate dateStartCalenderie, LocalDate dateEndCalenderie);
+    //List<CollaborateurDTO> findCollaborateursEnCongeParEquipeEtPeriode(String nomEquipe, LocalDate dateStartCalenderie, LocalDate dateEndCalenderie);
    // int countCollaborateursEnCongeParEquipeEtPeriode(String nomEquipe, LocalDate dateStartCalenderie, LocalDate dateEndCalenderie);
 
 
-    //List<CollaborateurDTO> findCollaborateursEnCongeParEquipeAnnee(String nomEquipe);
+    //pour email:
 
-    //pour email 2 methode:
-    //List<CollaborateurDTO> getCollaborateursEnConge(LocalDate date);
+    void sendDailyReportToTeamLeaders(LocalDate date);
     //List<String> getChefsEquipeEmails(String equipe);
 
 }

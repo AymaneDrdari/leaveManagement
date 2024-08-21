@@ -143,10 +143,10 @@ public class NiveauServiceImpl implements NiveauService {
             logger.error("Le nom du niveau est requis");
             throw new IllegalArgumentException("Le nom du niveau est requis");
         }
-        if (niveauDTO.getDescription() == null || niveauDTO.getDescription().isEmpty()) {
-            logger.error("La description du niveau est requise");
-            throw new IllegalArgumentException("La description du niveau est requise");
-        }
+//        if (niveauDTO.getDescription() == null || niveauDTO.getDescription().isEmpty()) {
+//            logger.error("La description du niveau est requise");
+//            throw new IllegalArgumentException("La description du niveau est requise");
+//        }
 
         // Vérifier si un niveau avec le même nom existe déjà
         Optional<Niveau> existingNiveau = niveauRepository.findByNom(niveauDTO.getNom());

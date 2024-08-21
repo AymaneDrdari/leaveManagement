@@ -4,14 +4,17 @@ import lombok.extern.slf4j.Slf4j;
 import net.pfe.dto.collab.AddCollaborateurDTORequest;
 import net.pfe.dto.collab.CollaborateurDTO;
 import net.pfe.entity.Collaborateur;
+import net.pfe.entity.Conge;
 import net.pfe.entity.Equipe;
 import net.pfe.entity.Niveau;
 import net.pfe.entity.enums.RoleCollaborateur;
 import net.pfe.exception.RessourceAlreadyExistsException;
 import net.pfe.exception.RessourceNotFoundException;
 import net.pfe.repository.CollaborateurRepository;
+import net.pfe.repository.CongeRepository;
 import net.pfe.repository.EquipeRepository;
 import net.pfe.repository.NiveauRepository;
+import net.pfe.service.EmailService;
 import net.pfe.service.interf.CollaborateurService;
 import net.pfe.service.interf.CongeService;
 import net.pfe.service.interf.EquipeService;
@@ -27,7 +30,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -40,16 +45,18 @@ public class CollaborateurServiceImpl implements CollaborateurService {
     public final CollaborateurRepository collaborateurRepository;
     private final EquipeRepository equipeRepository;
     private final NiveauRepository niveauRepository;
-    private final CongeService congeService;
+    private final CongeRepository congeRepository;
+    private final EmailService emailService;
     public final EquipeService equipeService;
     public final NiveauService niveauService;
     public final ModelMapper modelMapper;
 
     @Autowired
-    public CollaborateurServiceImpl(CollaborateurRepository collaborateurRepository, EquipeRepository equipeRepository, NiveauRepository niveauRepository, EquipeService equipeService, NiveauService niveauService, ModelMapper modelMapper, CongeService congeService) {
+    public CollaborateurServiceImpl(CollaborateurRepository collaborateurRepository, EquipeRepository equipeRepository, NiveauRepository niveauRepository, CongeRepository congeRepository, EquipeService equipeService, NiveauService niveauService, ModelMapper modelMapper, CongeService congeService, EmailService emailService) {
         this.collaborateurRepository = collaborateurRepository;
         this.equipeRepository = equipeRepository;
-        this.congeService = congeService;
+        this.congeRepository = congeRepository;
+        this.emailService = emailService;
         this.niveauRepository = niveauRepository;
         this.equipeService = equipeService;
         this.niveauService = niveauService;
@@ -225,108 +232,75 @@ public class CollaborateurServiceImpl implements CollaborateurService {
         return mapCollaborateursToDTOs(collaborateurs);
     }
 
-//    @Override
-//    public List<CollaborateurDTO> findCollaborateursEnCongeParEquipeEtPeriode(String nomEquipe, LocalDate dateStartCalenderie, LocalDate dateEndCalenderie) {
-//        UUID equipeCode = equipeService.findCodeEquipeByNom(nomEquipe);
-//        if (equipeCode == null) {
-//            throw new RessourceNotFoundException("Équipe introuvable avec le nom : " + nomEquipe);
-//        }
-//
-//        List<Collaborateur> collaborateurs = collaborateurRepository.findByEquipeCode(equipeCode);
-//        if (collaborateurs.isEmpty()) {
-//            throw new RessourceNotFoundException("Aucun collaborateur n'a été trouvé dans cette équipe.");
-//        }
-//
-//        // Filtrer les collaborateurs qui sont en congé durant la période donnée
-//        List<Collaborateur> collaborateursEnConge = collaborateurs.stream()
-//                .filter(collaborateur -> congeService.isCollaborateurEnConge(collaborateur, dateStartCalenderie, dateEndCalenderie))
-//                .collect(Collectors.toList());
-//
-//        return mapCollaborateursToDTOs(collaborateursEnConge);
-//    }
-
-    @Override
-    public List<CollaborateurDTO> findCollaborateursEnCongeParEquipeEtPeriode(String nomEquipe, LocalDate dateStartCalenderie, LocalDate dateEndCalenderie) {
-        UUID equipeCode = equipeService.findCodeEquipeByNom(nomEquipe);
-        if (equipeCode == null) {
-            throw new RessourceNotFoundException("Équipe introuvable avec le nom : " + nomEquipe);
-        }
-
-        List<Collaborateur> collaborateurs = collaborateurRepository.findByEquipeCode(equipeCode);
-        if (collaborateurs.isEmpty()) {
-            throw new RessourceNotFoundException("Aucun collaborateur n'a été trouvé dans cette équipe.");
-        }
-
-        // Filtrer les collaborateurs qui sont en congé durant la période donnée
-        List<Collaborateur> collaborateursEnConge = collaborateurs.stream()
-                .filter(collaborateur -> congeService.isCollaborateurEnConge(collaborateur, dateStartCalenderie, dateEndCalenderie))
-                .collect(Collectors.toList());
-
-        // Convertir les entités en DTOs
-        return mapCollaborateursToDTOs(collaborateursEnConge);
-    }
-
-
-//    @Override
-//    public int countCollaborateursEnCongeParEquipeEtPeriode(String nomEquipe, LocalDate dateStartCalenderie, LocalDate dateEndCalenderie) {
-//        UUID equipeCode = equipeService.findCodeEquipeByNom(nomEquipe);
-//        if (equipeCode == null) {
-//            throw new RessourceNotFoundException("Équipe introuvable avec le nom : " + nomEquipe);
-//        }
-//
-//        List<Collaborateur> collaborateurs = collaborateurRepository.findByEquipeCode(equipeCode);
-//        if (collaborateurs.isEmpty()) {
-//            throw new RessourceNotFoundException("Aucun collaborateur n'a été trouvé dans cette équipe.");
-//        }
-//
-//        long count = collaborateurs.stream()
-//                .filter(collaborateur -> congeService.isCollaborateurEnConge(collaborateur, dateStartCalenderie, dateEndCalenderie))
-//                .count();
-//
-//        return (int) count;
-//    }
-//
-//    @Override
-//    public List<CollaborateurDTO> findCollaborateursEnCongeParEquipeAnnee(String nomEquipe) {
-//        UUID equipeCode = equipeService.findCodeEquipeByNom(nomEquipe);
-//        if (equipeCode == null) {
-//            throw new RessourceNotFoundException("Équipe introuvable avec le nom : " + nomEquipe);
-//        }
-//
-//        List<Collaborateur> collaborateurs = collaborateurRepository.findByEquipeCode(equipeCode);
-//        if (collaborateurs.isEmpty()) {
-//            throw new RessourceNotFoundException("Aucun collaborateur n'a été trouvé dans cette équipe.");
-//        }
-//
-//        // Filtrer les collaborateurs qui sont en congé durant l'année en cours
-//        List<Collaborateur> collaborateursEnConge = collaborateurs.stream()
-//                .filter(collaborateur -> congeService.isCollaborateurEnConge(collaborateur, LocalDate.now().withDayOfYear(1), LocalDate.now().withDayOfYear(LocalDate.now().lengthOfYear())))
-//                .collect(Collectors.toList());
-//
-//        return mapCollaborateursToDTOs(collaborateursEnConge);
-//    }
 
 
 
     //pour email:
-//    @Override
-//    public List<CollaborateurDTO> getCollaborateursEnConge(LocalDate date) {
-//        return collaborateurRepository.findAll().stream()
-//                .filter(collaborateur -> collaborateur.getConges().stream()
-//                        .anyMatch(conge -> !conge.getDateDebut().isAfter(date) && !conge.getDateFin().isBefore(date)))
-//                .map(this::mapCollaborateurToDTO)
-//                .collect(Collectors.toList());
-//    }
-//
-//
-//    @Override
-//    public List<String> getChefsEquipeEmails(String equipe) {
-//        return collaborateurRepository.findByEquipe_NomAndRole(equipe, RoleCollaborateur.CHEF_EQUIPE).stream()
-//                .map(Collaborateur::getEmail)
-//                .collect(Collectors.toList());
-//    }
+
+    @Override
+    public void sendDailyReportToTeamLeaders(LocalDate date) {
+        Map<String, List<Conge>> rapport = generateDailyReportForTeamLeaders(date);
+
+        // Filter teams with collaborators on leave
+        Map<String, List<Conge>> rapportFiltre = rapport.entrySet().stream()
+                .filter(entry -> !entry.getValue().isEmpty())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+        // Calculate the total number of people on leave
+        long nombreTotalEnConge = rapportFiltre.values().stream()
+                .flatMap(List::stream)
+                .count();
+
+        // Retrieve team leaders for each team
+        List<Equipe> equipes = equipeRepository.findAll();
+
+        for (Equipe equipe : equipes) {
+            String nomEquipe = equipe.getNom();
+            List<Collaborateur> chefs = collaborateurRepository.findByEquipe_NomAndRole(nomEquipe, RoleCollaborateur.CHEF_EQUIPE);
+
+            // Convert leaders to DTOs
+            List<CollaborateurDTO> chefsDTO = mapCollaborateursToDTOs(chefs);
+
+            for (CollaborateurDTO chef : chefsDTO) {
+                String email = chef.getEmail();
+                String subject = "Rapport quotidien des congés";
+                StringBuilder text = new StringBuilder("Bonjour,\n\n");
+
+                // Add the total number of people on leave
+                text.append(nombreTotalEnConge).append(" personne(s) absente(s) aujourd'hui :\n\n");
+
+                rapportFiltre.forEach((equipeNom, conges) -> {
+                    text.append(equipeNom).append(" :\n");
+                    conges.forEach(conge -> {
+                        Collaborateur collaborateur = conge.getCollaborateur();
+                        text.append("- ").append(collaborateur.getPrenom())
+                                .append(" ").append(collaborateur.getNom())
+                                .append(" (du ").append(conge.getDateDebut())
+                                .append(" au ").append(conge.getDateFin()).append(")\n");
+                    });
+                    text.append("\n");
+                });
+
+                text.append("Merci.");
+
+                emailService.sendEmail(email, subject, text.toString());
+            }
+        }
+    }
 
 
+    public Map<String, List<Conge>> generateDailyReportForTeamLeaders(LocalDate date) {
+        List<Equipe> equipes = equipeRepository.findAll();
+        Map<String, List<Conge>> rapport = new HashMap<>();
+
+        for (Equipe equipe : equipes) {
+            String equipeNom = equipe.getNom();
+            List<Conge> congesEnCours = congeRepository.findByEquipeAndDate(equipeNom, date);
+            rapport.put(equipeNom, congesEnCours);
+        }
+
+        return rapport;
+    }
 
 
 }
