@@ -32,7 +32,7 @@ public interface CollaborateurService {
 
     List<CollaborateurDTO> findCollaborateursBySearch(String search);
     List<CollaborateurDTO> findCollaborateursEnCongeParEquipeEtPeriode(String nomEquipe, LocalDate dateStartCalenderie, LocalDate dateEndCalenderie);
-   // int countCollaborateursEnCongeParEquipeEtPeriode(String nomEquipe, LocalDate dateStartCalenderie, LocalDate dateEndCalenderie);
+    // int countCollaborateursEnCongeParEquipeEtPeriode(String nomEquipe, LocalDate dateStartCalenderie, LocalDate dateEndCalenderie);
 
 
     //List<CollaborateurDTO> findCollaborateursEnCongeParEquipeAnnee(String nomEquipe);

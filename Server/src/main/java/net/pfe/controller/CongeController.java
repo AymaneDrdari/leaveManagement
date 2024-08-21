@@ -89,14 +89,14 @@ public class CongeController {
     public ResponseEntity<ApiResponse<CongeDTO>> updateConge(
             @Valid @RequestBody CongeDTORequest congeDTORequest) {
         try {
-        CongeDTO updatedConge = congeService.updateConge(congeDTORequest.getIdConge(),congeDTORequest);
-        ApiResponse<CongeDTO> response = ApiResponse.<CongeDTO>builder()
-                .message("Congé mis à jour avec succès")
-                .code(HttpStatus.OK.value())
-                .data(updatedConge)
-                .timestamp(LocalDateTime.now())
-                .build();
-        return ResponseEntity.ok(response);
+            CongeDTO updatedConge = congeService.updateConge(congeDTORequest.getIdConge(),congeDTORequest);
+            ApiResponse<CongeDTO> response = ApiResponse.<CongeDTO>builder()
+                    .message("Congé mis à jour avec succès")
+                    .code(HttpStatus.OK.value())
+                    .data(updatedConge)
+                    .timestamp(LocalDateTime.now())
+                    .build();
+            return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
             ApiResponse<CongeDTO> response = ApiResponse.<CongeDTO>builder()
                     .message(e.getMessage()) // Inclure le message d'erreur ici
