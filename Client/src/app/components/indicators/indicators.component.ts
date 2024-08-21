@@ -24,13 +24,6 @@ export class IndicatorsComponent implements OnInit {
 
   // Méthode pour charger les équipes depuis le service
   loadEquipes(): void {
-<<<<<<< HEAD
-    this.equipeService.getAllEquipes().subscribe(equipes => {
-      this.equipes = equipes;
-      this.loadLeaveCounts(); // Charger les congés après avoir récupéré les équipes
-    }, error => {
-      console.error('Error fetching equipes:', error);
-=======
     this.equipeService.getAllEquipes().subscribe({
       next: (equipes) => {
         this.equipes = equipes;
@@ -39,24 +32,19 @@ export class IndicatorsComponent implements OnInit {
       error: (error) => {
         console.error('Error fetching equipes:', error);
       }
->>>>>>> 9e4dd60a9398335148b55cbf2009edcf8fb4d507
     });
   }
 
   // Charger les compteurs de congés
   loadLeaveCounts(): void {
     this.equipes.forEach(equipe => {
-<<<<<<< HEAD
-      this.leaveService.getCountCollaborateursEnConge(equipe.nom).subscribe(response => {
-=======
       this.leaveService.getCountCollaborateursEnConge(equipe.nom)
         .subscribe(response => {
->>>>>>> 9e4dd60a9398335148b55cbf2009edcf8fb4d507
-        this.leaveCounts[equipe.nom] = response.data || 0;
-      }, error => {
-        console.error(`Error fetching leave count for team ${equipe.nom}:`, error);
-        this.leaveCounts[equipe.nom] = 0;
-      });
+          this.leaveCounts[equipe.nom] = response.data || 0;
+        }, error => {
+          console.error(`Error fetching leave count for team ${equipe.nom}:`, error);
+          this.leaveCounts[equipe.nom] = 0;
+        });
     });
   }
 
