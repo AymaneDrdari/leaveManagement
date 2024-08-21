@@ -24,7 +24,11 @@
 }
 
 .indicator-card.active {
+<<<<<<< HEAD
   border: 4px solid #000000; /* Highlighted green border */
+=======
+  border: 3px solid #424242; /* Highlighted green border */
+>>>>>>> 9e4dd60a9398335148b55cbf2009edcf8fb4d507
   font-size: xxx-large;
   font-family: "Droid Serif";
 }

@@ -9,7 +9,7 @@
       <div *ngIf="showContextMenu" id="contextMenu" class="context-menu" #contextMenuRef
            [ngStyle]="{'top.px': contextMenuY, 'left.px': contextMenuX}">
         <ul>
-          <li (click)="handleContextMenuAction('addLeave')">Ajouter un congé</li>
+          <li (click)="handleContextMenuAction('addLeave')">Déclarer un congé</li>
           <li (click)="handleContextMenuAction('addHoliday')">Ajouter un jour férié</li>
         </ul>
       </div>

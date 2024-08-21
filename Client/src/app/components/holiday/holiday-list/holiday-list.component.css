@@ -37,12 +37,6 @@
   font-size: 15px;
 }
 
-/* Style des breadcrumbs */
-.breadcrumb {
-  margin-bottom: 20px;
-  padding: 10px 0;
-}
-
 /* Style du tableau */
 .table-container {
   overflow-x: auto; /* Défilement horizontal si nécessaire */
@@ -75,21 +69,20 @@ tr:nth-child(even) {
 }
 
 /* Style pour le paginator */
-mat-paginator {
+mat-paginator, .pagination-nav {
   margin-top: 20px;
 }
 
 /* Style du header */
-.header {
-  margin-bottom: 20px;
+.header, .head {
+  margin-bottom: 10px;
   display: flex;
   justify-content: flex-end; /* Alignement du contenu à gauche */
-  padding: 10px 0; /* Ajoute du padding pour le header */
+  padding: 5px 0; /* Ajoute du padding pour le header */
 }
 
 .head {
-  display: flex;
-  justify-content: space-between;
+  justify-content: space-between; /* Alignement avec espace entre les éléments */
 }
 
 /* Style de la boîte de confirmation de suppression */
@@ -111,4 +104,26 @@ mat-paginator {
   border-radius: 8px;
   width: 300px;
   text-align: center;
+}
+
+/* Style de la pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  padding-left: 0;
+  list-style: none;
+}
+
+.page-item {
+  margin: 0 5px;
+}
+
+.page-item.disabled button {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.page-item.active button {
+  background-color: #3f51b5;
+  color: white;
 }

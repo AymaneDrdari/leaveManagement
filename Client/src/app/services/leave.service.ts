@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {BehaviorSubject, Observable, Subject, tap, throwError} from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { Leave } from '../models/leave';
 import { ApiResponse } from '../models/ApiResponse';
-import {Holiday} from "../models/holiday";
 import {Collaborateur} from "../models/collaborateur";
 import {CongeDetailDTO} from "../models/conge-detail-dto.model";
 
@@ -18,8 +17,6 @@ export class LeaveService {
   private selectedTeamSubject = new BehaviorSubject<string | null>(null);
   selectedTeam$ = this.selectedTeamSubject.asObservable();
 
-  private leavesVisibleSubject = new BehaviorSubject<boolean>(true);
-  holidaysVisible$ = this.leavesVisibleSubject.asObservable();
 
   // Nouveau Subject pour notifier les mises à jour de congés
   private leavesUpdatedSubject = new Subject<void>();
@@ -36,16 +33,8 @@ export class LeaveService {
     this.selectedTeamSubject.next(team);
   }
 
-  toggleLeavesVisibility(): void {
-    const currentState = this.leavesVisibleSubject.value;
-    this.leavesVisibleSubject.next(!currentState);
-  }
 
   // Méthode pour récupérer tous les congés
-  getConges(): Observable<ApiResponse<Leave[]>> {
-    return this.http.get<ApiResponse<Leave[]>>(`${this.apiUrl}/en-conge`)
-      .pipe(catchError(this.handleError));
-  }
 
   // Nouvelle méthode pour obtenir le nombre de collaborateurs en congé par équipe
   getCountCollaborateursEnConge(nomEquipe: string): Observable<ApiResponse<number>> {
@@ -54,29 +43,19 @@ export class LeaveService {
     }).pipe(catchError(this.handleError));
   }
 
-  getCongesByEquipe(nomEquipe: string): Observable<ApiResponse<CongeDetailDTO[]>> {
-    return this.http.get<ApiResponse<CongeDetailDTO[]>>(`${this.apiUrl}/equipe`, {
-      params: { nomEquipe }
-    });
-  }
-  // getLeavesByTeam(team: string): Observable<ApiResponse<Leave[]>> {
-  //   return this.http.get<ApiResponse<Leave[]>>(`${this.apiUrl}/team/${team}`).pipe(
-  //     catchError(this.handleError)
-  //   );
+  //   getCongesByEquipe(nomEquipe: string): Observable<ApiResponse<CongeDetailDTO[]>> {
+  //   return this.http.get<ApiResponse<CongeDetailDTO[]>>(`${this.apiUrl}/equipe`, {
+  //     params: { nomEquipe }
+  //   });
   // }
-  getLeavesByTeam(nomEquipe: string): Observable<ApiResponse<Leave[]>> {
-    return this.http.get<ApiResponse<Leave[]>>(`${this.apiUrl}?nomEquipe=${nomEquipe}`);
+  getCongesByEquipe(nomEquipe: string, annee: number): Observable<ApiResponse<CongeDetailDTO[]>> {
+    const params = new HttpParams()
+      .set('nomEquipe', nomEquipe)
+      .set('annee', annee.toString());
+    return this.http.get<ApiResponse<CongeDetailDTO[]>>(`${this.apiUrl}/equipe`, { params });
   }
-  getCollaborateursEnCongeParEquipeEtPeriode(nomEquipe: string, dateStartCalenderie: string, dateEndCalenderie: string): Observable<ApiResponse<Collaborateur[]>> {
-    const params = {
-      nomEquipe: nomEquipe,
-      dateStartCalenderie: dateStartCalenderie,
-      dateEndCalenderie: dateEndCalenderie
-    };
-    return this.http.get<ApiResponse<Collaborateur[]>>(`${this.apiUrl}/en-conge`, {params}).pipe(
-      catchError(this.handleError)
-    );
-  }
+
+
   getAllLeaves(page: number, size: number): Observable<ApiResponse<Leave[]>> {
     return this.http.get<ApiResponse<Leave[]>>(`${this.apiUrl}/page?page=${page}&size=${size}`).pipe(
       catchError(this.handleError)

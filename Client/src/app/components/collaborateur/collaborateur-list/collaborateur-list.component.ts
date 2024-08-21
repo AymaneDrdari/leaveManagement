@@ -1,4 +1,4 @@
-import { Component, ViewChild, OnInit, AfterViewInit } from '@angular/core';
+import {Component, ViewChild, OnInit, AfterViewInit, ChangeDetectorRef} from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
@@ -18,7 +18,7 @@ export class CollaborateurListComponent implements OnInit, AfterViewInit {
   showDeleteConfirmation = false;
   selectedCollaborateurId: string | null = null;
   errorMessage: string | null = null;
-  pageSize = 5;
+  pageSize = 7;
   currentPage = 0;
   totalItems = 0;
 
@@ -26,7 +26,8 @@ export class CollaborateurListComponent implements OnInit, AfterViewInit {
 
   constructor(
     private collaborateurService: CollaborateurService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
@@ -38,15 +39,20 @@ export class CollaborateurListComponent implements OnInit, AfterViewInit {
   }
 
   loadCollaborateurs(page: number = 0): void {
-    this.collaborateurService.findAllCollaborateurs(page, this.pageSize).subscribe((response: ApiResponse<Collaborateur[]>) => {
+    this.collaborateurService.getCollaborateursPage(page, this.pageSize).subscribe((response: ApiResponse<Collaborateur[]>) => {
+      console.log('API Response:', response); // Log de la réponse complète
       this.dataSource.data = response.data;
+      console.log('Collaborateurs chargés:', this.dataSource.data); // Vérifier les données
       this.totalItems = response.totalElements;
       this.currentPage = page;
+      this.cdr.detectChanges();
     }, (error: any) => {
       console.error('Error loading collaborateurs:', error);
       this.errorMessage = 'Une erreur est survenue lors du chargement des collaborateurs';
     });
   }
+
+
 
   openAddEditCollaborateurModal(collaborateur?: Collaborateur): void {
     const dialogRef = this.dialog.open(AddEditCollaborateurComponent, {
@@ -86,16 +92,20 @@ export class CollaborateurListComponent implements OnInit, AfterViewInit {
     this.selectedCollaborateurId = null;
   }
 
-  onPageChange(event: any): void {
-    this.currentPage = event.pageIndex;
-    this.pageSize = event.pageSize;
-    this.loadCollaborateurs(this.currentPage);
+  //Gère les changements de page dans le tableau.
+  onPageChange(page: number): void {
+    console.log('Page change triggered:', page); // Ajouter ce log pour vérifier
+    if (page < 0 || page >= Math.ceil(this.totalItems / this.pageSize)) return;
+    this.currentPage = page;
+    this.loadCollaborateurs(page);
   }
+
 
   get totalPages(): number {
     return Math.max(Math.ceil(this.totalItems / this.pageSize), 1);
   }
 
+  // Génère un tableau pour la pagination.
   paginationArray(): number[] {
     return Array.from({ length: this.totalPages }, (_, i) => i);
   }

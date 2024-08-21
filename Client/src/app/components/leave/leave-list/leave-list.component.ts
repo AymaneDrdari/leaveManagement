@@ -1,12 +1,10 @@
 import { Component, ViewChild, OnInit, AfterViewInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
-import { MatPaginator } from '@angular/material/paginator';
+import {MatPaginator, PageEvent} from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
 import { AddEditLeaveComponent } from '../add-edit-leave/add-edit-leave.component';
 import { Leave } from '../../../models/leave';
 import { LeaveService } from '../../../services/leave.service';
-import {Holiday} from "../../../models/holiday";
-import {AddEditHolidayComponent} from "../../holiday/add-edit-holiday/add-edit-holiday.component";
 
 @Component({
   selector: 'app-leave-list',
@@ -19,7 +17,7 @@ export class LeaveListComponent implements OnInit, AfterViewInit {
   showDeleteConfirmation = false;
   selectedLeaveId: string | null = null;
   errorMessage: string | null = null;
-  pageSize = 5;
+  pageSize = 7;
   currentPage = 0;
   totalItems = 0;
 
@@ -95,7 +93,7 @@ export class LeaveListComponent implements OnInit, AfterViewInit {
     this.selectedLeaveId = null;
   }
 
-  //Gère les changements de page dans le tableau de jours fériés.
+  //Gère les changements de page dans le tableau.
   onPageChange(page: number): void {
     if (page < 0 || page >= Math.ceil(this.totalItems / this.pageSize)) return;
     this.currentPage = page;
@@ -110,4 +108,9 @@ export class LeaveListComponent implements OnInit, AfterViewInit {
   paginationArray(): number[] {
     return Array.from({ length: this.totalPages }, (_, i) => i);
   }
+
+
+
+
+
 }
