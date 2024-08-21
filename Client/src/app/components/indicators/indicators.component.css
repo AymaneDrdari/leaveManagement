@@ -2,65 +2,54 @@
   display: flex;
   justify-content: space-around;
   flex-wrap: wrap;
+  margin: 0 auto;
+  padding: 5px;
+  max-width: 1200px; /* Pour centrer les indicateurs */
 }
 
 .indicator-card {
-  width: calc(20% - 20px);
-  max-width: 200px;
-  height: 120px;
-  margin-top: 25px;
-  margin-bottom: 20px;
+  width: calc(20% - 15px); /* Ajustement de la largeur pour mieux gérer l'espacement */
+  max-width: 180px; /* Limitation de la taille maximale */
+  height: 110px; /* Hauteur légèrement réduite */
+  margin: 5px; /* Marges réduites pour maximiser l'espace */
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease; /* Transition plus rapide pour une interaction fluide */
+  box-sizing: border-box;
+  padding: 5px;
+  border-radius: 8px; /* Ajout d'un léger arrondi pour un look plus moderne */
 }
 
 .indicator-card:hover,
 .indicator-card.hovered {
-  transform: scale(1.05);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  transform: scale(1.08); /* Léger agrandissement pour l'effet de survol */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); /* Ombre réduite pour un effet plus subtil */
 }
 
 .indicator-card.active {
-<<<<<<< HEAD
-  border: 4px solid #000000; /* Highlighted green border */
-=======
-  border: 3px solid #424242; /* Highlighted green border */
->>>>>>> 9e4dd60a9398335148b55cbf2009edcf8fb4d507
-  font-size: xxx-large;
-  font-family: "Droid Serif";
+  border: 3px solid #0a0a0a; /* Bordure noire pour l'indicateur actif */
+  transform: scale(1.1); /* Agrandissement un peu plus marqué pour l'indicateur actif */
 }
 
 .indicator-card h3 {
-  margin-top: 8px;
+  margin: 8px 0 5px; /* Réduction des marges pour mieux centrer le texte */
   text-align: center;
+  font-size: 16px; /* Taille du texte ajustée pour une meilleure lisibilité */
+  color: white;
 }
 
 .indicator-card p {
-  margin-top: 3px;
+  margin: 0;
   text-align: center;
-  font-size: 18px;
+  font-size: 16px; /* Taille de texte alignée avec le titre */
   color: white;
 }
 
-.royal {
-  background-color: royalblue;
-  color: white;
-}
-
-.gold {
-  background-color: gold;
-  color: black;
-}
-
-.mauve {
-  background-color: rebeccapurple;
-  color: white;
-}
-
-.blue {
-  background-color: skyblue;
-  color: black;
+mat-icon {
+  font-size: 28px; /* Ajustement de la taille de l'icône */
+  color: white; /* Couleur de l'icône alignée avec le texte */
+  margin-bottom: 5px;
 }

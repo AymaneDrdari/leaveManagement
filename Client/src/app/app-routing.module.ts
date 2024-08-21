@@ -4,8 +4,6 @@ import { RouterModule, Routes } from '@angular/router';
 import { CalendarComponent } from './components/calendar/calendar.component';
 import { HolidayListComponent } from './components/holiday/holiday-list/holiday-list.component';
 import { CollaborateurListComponent } from './components/collaborateur/collaborateur-list/collaborateur-list.component';
-
-import {HolidayModalComponent} from "./components/holiday/holiday-modal/holiday-modal.component";
 import {LeaveListComponent} from "./components/leave/leave-list/leave-list.component";
 import {NiveauListComponent} from "./components/niveaux/niveau-list/niveau-list.component";
 import {EquipeListComponent} from "./components/equipes/equipe-list/equipe-list.component";

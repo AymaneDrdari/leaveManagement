@@ -1,6 +1,5 @@
 package net.pfe.service.interf;
 
-import net.pfe.dto.collab.CollaborateursEnCongeRequestDTO;
 import net.pfe.dto.conge.CongeDTO;
 import net.pfe.dto.conge.CongeDTORequest;
 import net.pfe.dto.conge.CongeDetailDTO;
@@ -27,7 +26,9 @@ public interface CongeService {
 
     List<CongeDTO> getJCongéPage(int page, int size);
 
-   // int countCollaborateursEnCongeParEquipeAnnee(String nomEquipe);
+    //int countCollaborateursEnCongeParEquipeAnnee(String nomEquipe);
+
+    //List<CongeDetailDTO> findCongesByEquipe(String nomEquipe);
 
     //    @Override
     //    public int countCollaborateursEnCongeParEquipeAnnee(String nomEquipe) {
@@ -47,68 +48,11 @@ public interface CongeService {
     //
     //        return (int) count;
     //    }
-    //int countCollaborateursEnCongeParEquipeEtPeriode(String nomEquipe, LocalDate dateStartCalenderie, LocalDate dateEndCalenderie);
+    int countCollaborateursEnCongeParEquipeMois(String nomEquipe, int mois, int annee);
 
-    //    @Override
-    //    public int countCollaborateursEnCongeParEquipeAnnee(String nomEquipe) {
-    //        UUID equipeCode = equipeService.findCodeEquipeByNom(nomEquipe);
-    //        if (equipeCode == null) {
-    //            throw new RessourceNotFoundException("Équipe introuvable avec le nom : " + nomEquipe);
-    //        }
-    //
-    //        List<Collaborateur> collaborateurs = collaborateurRepository.findByEquipeCode(equipeCode);
-    //        if (collaborateurs.isEmpty()) {
-    //            throw new RessourceNotFoundException("Aucun collaborateur n'a été trouvé dans cette équipe.");
-    //        }
-    //
-    //        long count = collaborateurs.stream()
-    //                .filter(collaborateur -> isCollaborateurEnConge(collaborateur, LocalDate.now().withDayOfYear(1), LocalDate.now().withDayOfYear(LocalDate.now().lengthOfYear())))
-    //                .count();
-    //
-    //        return (int) count;
-    //    }
+    List<CongeDetailDTO> findCongesByEquipe(String nomEquipe, int annee);
 
-    //int countCollaborateursEnCongeParEquipeEtPeriode(CollaborateursEnCongeRequestDTO request);
+    //int countCollaborateursEnCongeParEquipeParPeriode(String nomEquipe, LocalDate dateStart, LocalDate dateEnd);
 
-    //    @Override
-    //    public int countCollaborateursEnCongeParEquipeAnnee(String nomEquipe) {
-    //        UUID equipeCode = equipeService.findCodeEquipeByNom(nomEquipe);
-    //        if (equipeCode == null) {
-    //            throw new RessourceNotFoundException("Équipe introuvable avec le nom : " + nomEquipe);
-    //        }
-    //
-    //        List<Collaborateur> collaborateurs = collaborateurRepository.findByEquipeCode(equipeCode);
-    //        if (collaborateurs.isEmpty()) {
-    //            throw new RessourceNotFoundException("Aucun collaborateur n'a été trouvé dans cette équipe.");
-    //        }
-    //
-    //        long count = collaborateurs.stream()
-    //                .filter(collaborateur -> isCollaborateurEnConge(collaborateur, LocalDate.now().withDayOfYear(1), LocalDate.now().withDayOfYear(LocalDate.now().lengthOfYear())))
-    //                .count();
-    //
-    //        return (int) count;
-    //    }
-   // int countCollaborateursEnCongeParEquipeEtPeriode(CollaborateursEnCongeRequestDTO request);
-
-    //    @Override
-    //    public int countCollaborateursEnCongeParEquipeAnnee(String nomEquipe) {
-    //        UUID equipeCode = equipeService.findCodeEquipeByNom(nomEquipe);
-    //        if (equipeCode == null) {
-    //            throw new RessourceNotFoundException("Équipe introuvable avec le nom : " + nomEquipe);
-    //        }
-    //
-    //        List<Collaborateur> collaborateurs = collaborateurRepository.findByEquipeCode(equipeCode);
-    //        if (collaborateurs.isEmpty()) {
-    //            throw new RessourceNotFoundException("Aucun collaborateur n'a été trouvé dans cette équipe.");
-    //        }
-    //
-    //        long count = collaborateurs.stream()
-    //                .filter(collaborateur -> isCollaborateurEnConge(collaborateur, LocalDate.now().withDayOfYear(1), LocalDate.now().withDayOfYear(LocalDate.now().lengthOfYear())))
-    //                .count();
-    //
-    //        return (int) count;
-    //    }
-    int countCollaborateursEnCongeParEquipeEtParPeriode(CollaborateursEnCongeRequestDTO request);
-
-    List<CongeDetailDTO> findCongesByEquipe(String nomEquipe);
+    //List<CongeDTO> findCongesByEquipeAndPeriod(String nomEquipe, LocalDate startDate, LocalDate endDate);
 }

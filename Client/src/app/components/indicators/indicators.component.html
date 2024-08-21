@@ -4,8 +4,7 @@
             [ngClass]="{ 'hovered': isHovered(equipe.nom), 'active': isActiveCard(equipe.nom) }">
     <mat-card-content>
       <mat-icon>people</mat-icon>
-      <h3>{{ equipe.nom }}</h3>
-      <p>{{ leaveCounts[equipe.nom] }}</p>
+      <div>{{ equipe.nom }} : {{ leaveCounts[equipe.nom] || 0}}</div>
     </mat-card-content>
   </mat-card>
 </div>

@@ -1,10 +1,12 @@
 package net.pfe.service.impl;
 
+import net.pfe.dto.exercice.ExerciceDTORequest;
 import net.pfe.dto.jourFerie.JourFerieDTO;
 import net.pfe.dto.jourFerie.JourFerieRequestDTO;
 import net.pfe.entity.JourFerie;
 import net.pfe.exception.RessourceNotFoundException;
 import net.pfe.repository.JourFerieRepository;
+import net.pfe.service.interf.ExerciceService;
 import net.pfe.service.interf.JourFerieService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -28,6 +30,7 @@ public class JourFerieServiceImpl implements JourFerieService {
     private static final Logger logger = LoggerFactory.getLogger(CollaborateurServiceImpl.class);
 
     public final JourFerieRepository jourFerieRepository;
+
     public final ModelMapper modelMapper;
     @Autowired
     public JourFerieServiceImpl(JourFerieRepository jourFerieRepository,  ModelMapper modelMapper) {
@@ -50,6 +53,7 @@ public class JourFerieServiceImpl implements JourFerieService {
 
         JourFerie jourFerie = modelMapper.map(jourFerieRequestDTO, JourFerie.class);
         jourFerieRepository.save(jourFerie);
+
         return modelMapper.map(jourFerie, JourFerieDTO.class);
     }
 

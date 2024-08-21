@@ -3,8 +3,10 @@ package net.pfe.repository;
 import net.pfe.entity.Collaborateur;
 import net.pfe.entity.enums.RoleCollaborateur;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,7 +29,6 @@ public interface CollaborateurRepository extends JpaRepository<Collaborateur, UU
 
 
    // pour email:
-  //  List<Collaborateur> findByEquipe_NomAndRole(String equipeNom, RoleCollaborateur role);
-
+   List<Collaborateur> findByEquipe_NomAndRole(String equipeNom, RoleCollaborateur role);
 
 }

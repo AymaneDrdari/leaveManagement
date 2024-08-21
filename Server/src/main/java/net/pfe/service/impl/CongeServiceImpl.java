@@ -1,7 +1,7 @@
 package net.pfe.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import net.pfe.dto.collab.CollaborateurDTO;
-import net.pfe.dto.collab.CollaborateursEnCongeRequestDTO;
 import net.pfe.dto.conge.CongeDTO;
 import net.pfe.dto.conge.CongeDTORequest;
 import net.pfe.dto.conge.CongeDetailDTO;
@@ -13,6 +13,7 @@ import net.pfe.repository.CollaborateurRepository;
 import net.pfe.repository.CongeRepository;
 import net.pfe.repository.ExerciceRepository;
 import net.pfe.repository.SoldeCongeRepository;
+import net.pfe.service.EmailService;
 import net.pfe.service.interf.CollaborateurService;
 import net.pfe.service.interf.CongeService;
 import net.pfe.service.interf.EquipeService;
@@ -32,12 +33,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@Slf4j
 public class CongeServiceImpl implements CongeService {
 
     private static final Logger logger = LoggerFactory.getLogger(CongeServiceImpl.class);
@@ -50,13 +53,11 @@ public class CongeServiceImpl implements CongeService {
     private final SoldeCongeRepository soldeCongeRepository;
     private final ModelMapper modelMapper;
     private final ExerciceRepository exerciceRepository;
-    private final CongeService congeService;
 
-    @Lazy
     @Autowired
     public CongeServiceImpl(CongeRepository congeRepository, EquipeService equipeService, JourFerieService jourFerieService,
                             CollaborateurRepository collaborateurRepository, @Lazy CollaborateurService collaborateurService,
-                            SoldeCongeRepository soldeCongeRepository, ModelMapper modelMapper, ExerciceRepository exerciceRepository, CongeService congeService) {
+                            SoldeCongeRepository soldeCongeRepository, ModelMapper modelMapper, ExerciceRepository exerciceRepository, EmailService emailService) {
         this.congeRepository = congeRepository;
         this.equipeService = equipeService;
         this.jourFerieService = jourFerieService;
@@ -65,7 +66,6 @@ public class CongeServiceImpl implements CongeService {
         this.soldeCongeRepository = soldeCongeRepository;
         this.modelMapper = modelMapper;
         this.exerciceRepository = exerciceRepository;
-        this.congeService = congeService;
     }
 
     @Override
@@ -127,6 +127,16 @@ public class CongeServiceImpl implements CongeService {
             conge = congeRepository.save(conge);
 
             logger.info("Congé créé avec succès avec ID : {}", conge.getIdConge());
+
+
+            // Envoyer un email de confirmation au collaborateur
+//            String email = collaborateur.getEmail();
+//            String subject = "Confirmation de votre congé";
+//            String text = "Bonjour " + collaborateur.getPrenom() + ",\n\nVotre congé du " + dateDebut + " au " + dateFin + " a été enregistré avec succès. " +
+//                    "Vous avez pris " + joursConge + " jours.\n\nMerci.";
+//            emailService.sendEmail(email, subject, text);
+
+
             return mapCongeToDTO(conge);
         } catch (DataIntegrityViolationException ex) {
             logger.error("Tentative de création d'un congé dupliqué interceptée : {}", congeDTORequest, ex);
@@ -257,6 +267,14 @@ public class CongeServiceImpl implements CongeService {
         existingConge = congeRepository.save(existingConge);
 
         logger.info("Congé mis à jour avec succès avec l'ID : {}", existingConge.getIdConge());
+
+        // Envoyer un email de confirmation de mise à jour au collaborateur
+//        String email = existingConge.getCollaborateur().getEmail();
+//        String subject = "Mise à jour de votre congé";
+//        String text = "Bonjour " + existingConge.getCollaborateur().getPrenom() + ",\n\nVotre congé du " + dateDebut + " au " + dateFin + " a été mis à jour avec succès. " +
+//                "Vous avez maintenant pris " + joursConge + " jours.\n\nMerci.";
+//        emailService.sendEmail(email, subject, text);
+
         return mapCongeToDTO(existingConge);
     }
 
@@ -383,7 +401,7 @@ public class CongeServiceImpl implements CongeService {
         return congeDTOList;
     }
 
-//    @Override
+    //    @Override
 //    public int countCollaborateursEnCongeParEquipeAnnee(String nomEquipe) {
 //        UUID equipeCode = equipeService.findCodeEquipeByNom(nomEquipe);
 //        if (equipeCode == null) {
@@ -401,44 +419,54 @@ public class CongeServiceImpl implements CongeService {
 //
 //        return (int) count;
 //    }
-@Override
-public int countCollaborateursEnCongeParEquipeEtParPeriode(CollaborateursEnCongeRequestDTO request) {
-    UUID equipeCode = equipeService.findCodeEquipeByNom(request.getNomEquipe());
-    if (equipeCode == null) {
-        throw new RessourceNotFoundException("Équipe introuvable avec le nom : " + request.getNomEquipe());
+    @Override
+    public int countCollaborateursEnCongeParEquipeMois(String nomEquipe, int mois, int annee) {
+        UUID equipeCode = equipeService.findCodeEquipeByNom(nomEquipe);
+        if (equipeCode == null) {
+            throw new RessourceNotFoundException("Équipe introuvable avec le nom : " + nomEquipe);
+        }
+
+        List<Collaborateur> collaborateurs = collaborateurRepository.findByEquipeCode(equipeCode);
+        if (collaborateurs.isEmpty()) {
+            throw new RessourceNotFoundException("Aucun collaborateur n'a été trouvé dans cette équipe.");
+        }
+
+        LocalDate startDate = LocalDate.of(annee, mois, 1);
+        LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
+
+        long count = collaborateurs.stream()
+                .filter(collaborateur -> isCollaborateurEnConge(collaborateur, startDate, endDate))
+                .count();
+
+        return (int) count;
     }
-
-    List<Collaborateur> collaborateurs = collaborateurRepository.findByEquipeCode(equipeCode);
-
-    // Si aucun collaborateur n'est trouvé, retournez 0 au lieu de lancer une exception
-    if (collaborateurs.isEmpty()) {
-        return 0;
-    }
-
-    long count = collaborateurs.stream()
-            .filter(collaborateur -> congeService.isCollaborateurEnConge(collaborateur, request.getDateStartCalenderie(), request.getDateEndCalenderie()))
-            .count();
-
-    return (int) count;
-}
-
 
 
     @Override
-    public List<CongeDetailDTO> findCongesByEquipe(String nomEquipe) {
-        logger.info("Recherche des congés pour l'équipe : {}", nomEquipe);
-        List<Conge> conges = congeRepository.findByCollaborateur_Equipe_Nom(nomEquipe);
+    public List<CongeDetailDTO> findCongesByEquipe(String nomEquipe, int annee) {
+        logger.info("Recherche des congés pour l'équipe : {} pour l'année : {}", nomEquipe, annee);
+
+        // Définir le début et la fin de l'année
+        LocalDate startOfYear = LocalDate.of(annee, 1, 1);
+        LocalDate endOfYear = LocalDate.of(annee, 12, 31).plusDays(1); // Inclure le dernier jour de l'année
+
+        // Filtrer les congés par année
+        List<Conge> conges = congeRepository.findByCollaborateur_Equipe_NomAndDateDebutAfterAndDateFinBefore(
+                nomEquipe, startOfYear, endOfYear);
 
         if (conges.isEmpty()) {
-            logger.warn("Aucun congé trouvé pour l'équipe : {}", nomEquipe);
+            logger.warn("Aucun congé trouvé pour l'équipe : {} pour l'année : {}", nomEquipe, annee);
         }
 
-        List<CongeDetailDTO> congeDetailDTOS = conges.stream().map(this::mapToCongeDetailDTO).collect(Collectors.toList());
+        List<CongeDetailDTO> congeDetailDTOS = conges.stream()
+                .map(this::mapToCongeDetailDTO)
+                .collect(Collectors.toList());
 
-        logger.info("Nombre de congés trouvés pour l'équipe {} : {}", nomEquipe, congeDetailDTOS.size());
+        logger.info("Nombre de congés trouvés pour l'équipe {} pour l'année {} : {}", nomEquipe, annee, congeDetailDTOS.size());
 
         return congeDetailDTOS;
     }
+
 
     private CongeDetailDTO mapToCongeDetailDTO(Conge conge) {
         double duree = ChronoUnit.DAYS.between(conge.getDateDebut(), conge.getDateFin()) + 1;
@@ -453,4 +481,40 @@ public int countCollaborateursEnCongeParEquipeEtParPeriode(CollaborateursEnConge
     }
 
 
+//    @Override
+//    public int countCollaborateursEnCongeParEquipeParPeriode(String nomEquipe, LocalDate dateStart, LocalDate dateEnd) {
+//        UUID equipeCode = equipeService.findCodeEquipeByNom(nomEquipe);
+//        if (equipeCode == null) {
+//            throw new RessourceNotFoundException("Équipe introuvable avec le nom : " + nomEquipe);
+//        }
+//
+//        List<Collaborateur> collaborateurs = collaborateurRepository.findByEquipeCode(equipeCode);
+//        if (collaborateurs.isEmpty()) {
+//            return 0; // Retourne 0 s'il n'y a aucun collaborateur dans l'équipe
+//        }
+//
+//        long count = collaborateurs.stream()
+//                .filter(collaborateur -> isCollaborateurEnConge(collaborateur, dateStart, dateEnd))
+//                .count();
+//
+//        return (int) count;
+//    }
+
+//    @Override
+//    public List<CongeDTO> findCongesByEquipeAndPeriod(String nomEquipe, LocalDate startDate, LocalDate endDate) {
+//        UUID equipeCode = equipeService.findCodeEquipeByNom(nomEquipe);
+//        if (equipeCode == null) {
+//            throw new RessourceNotFoundException("Équipe introuvable avec le nom : " + nomEquipe);
+//        }
+//
+//        List<Collaborateur> collaborateurs = collaborateurRepository.findByEquipeCode(equipeCode);
+//        if (collaborateurs.isEmpty()) {
+//            return Collections.emptyList(); // Retourne une liste vide si aucun collaborateur dans l'équipe
+//        }
+//
+//        List<Conge> conges = congeRepository.findByCollaborateurInAndDateDebutBetween(collaborateurs, startDate, endDate);
+//
+//        // Mapper les entités Conge en DTOs
+//        return mapCongesToDTOs(conges);
+//    }
 }

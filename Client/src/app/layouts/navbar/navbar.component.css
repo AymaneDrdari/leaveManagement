@@ -9,7 +9,8 @@ body {
   align-items: center;
   background-color: #ffffff; /* Couleur de fond blanche pour un look propre */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Ombre subtile pour la profondeur */
-  padding: 10px 20px; /* Ajout de padding en haut */
+  padding: 5px 10px; /* Réduire le padding pour diminuer l'espace vertical */
+  min-height: 50px; /* Ajuster la hauteur minimale de la barre de navigation */
 }
 
 .navbar-section {
@@ -24,7 +25,7 @@ body {
 }
 
 .logo {
-  height: 40px; /* Hauteur du logo */
+  height: 30px; /* Réduire la hauteur du logo */
   width: auto; /* Largeur automatique pour conserver les proportions */
 }
 
@@ -36,7 +37,7 @@ body {
 
 .search-form {
   width: 100%;
-  max-width: 500px; /* Augmenter la largeur maximale de la barre de recherche */
+  max-width: 400px; /* Réduire la largeur maximale de la barre de recherche */
 }
 
 .profile-section {

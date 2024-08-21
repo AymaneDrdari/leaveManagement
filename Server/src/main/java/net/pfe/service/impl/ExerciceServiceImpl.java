@@ -8,6 +8,8 @@ import net.pfe.repository.ExerciceRepository;
 import net.pfe.service.interf.ExerciceService;
 import net.pfe.service.interf.JourFerieService;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,17 +24,27 @@ import java.util.UUID;
 @Transactional
 @Slf4j
 public class ExerciceServiceImpl implements ExerciceService {
-    public final ExerciceRepository exerciceRepository;
-    private final JourFerieService jourFerieService;
-    public final ModelMapper modelMapper;
-
-    public ExerciceServiceImpl(ExerciceRepository exerciceRepository, JourFerieService jourFerieService, ModelMapper modelMapper) {
+    private final ExerciceRepository exerciceRepository;
+    private  JourFerieService jourFerieService;
+    private final ModelMapper modelMapper;
+    @Autowired
+    public ExerciceServiceImpl(ExerciceRepository exerciceRepository, ModelMapper modelMapper) {
         this.exerciceRepository = exerciceRepository;
-        this.jourFerieService = jourFerieService;
         this.modelMapper = modelMapper;
+    }
+    @Autowired
+    public void setJourFerieService(JourFerieService jourFerieService) {
+        this.jourFerieService = jourFerieService;
     }
 
 
+    //@Scheduled(cron = "0 * * * * *")
+    @Scheduled(cron = "0 0 0 1 1 *") // Chaque 1er janvier à minuit
+    public void calculateAnnualExercise() {
+        int currentYear = LocalDate.now().getYear();
+        log.info("Début du calcul automatique de l'exercice pour l'année : {}", currentYear);
+        calculerExerciceAnnuel(currentYear);
+    }
     @Override
     public ExerciceDTORequest calculerExerciceAnnuel(int annee) {
         log.info("Calcul de l'exercice annuel pour l'année : {}", annee);
