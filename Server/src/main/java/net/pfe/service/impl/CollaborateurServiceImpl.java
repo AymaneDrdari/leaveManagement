@@ -20,6 +20,7 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -44,6 +45,7 @@ public class CollaborateurServiceImpl implements CollaborateurService {
     public final EquipeService equipeService;
     public final NiveauService niveauService;
     public final ModelMapper modelMapper;
+
 
     @Autowired
     public CollaborateurServiceImpl(CollaborateurRepository collaborateurRepository, EquipeRepository equipeRepository, NiveauRepository niveauRepository, EquipeService equipeService, NiveauService niveauService, ModelMapper modelMapper, CongeService congeService) {

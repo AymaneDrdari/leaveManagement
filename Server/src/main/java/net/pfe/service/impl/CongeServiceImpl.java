@@ -1,6 +1,7 @@
 package net.pfe.service.impl;
 
 import net.pfe.dto.collab.CollaborateurDTO;
+import net.pfe.dto.collab.CollaborateursEnCongeRequestDTO;
 import net.pfe.dto.conge.CongeDTO;
 import net.pfe.dto.conge.CongeDTORequest;
 import net.pfe.dto.conge.CongeDetailDTO;
@@ -49,11 +50,13 @@ public class CongeServiceImpl implements CongeService {
     private final SoldeCongeRepository soldeCongeRepository;
     private final ModelMapper modelMapper;
     private final ExerciceRepository exerciceRepository;
+    private final CongeService congeService;
 
+    @Lazy
     @Autowired
     public CongeServiceImpl(CongeRepository congeRepository, EquipeService equipeService, JourFerieService jourFerieService,
                             CollaborateurRepository collaborateurRepository, @Lazy CollaborateurService collaborateurService,
-                            SoldeCongeRepository soldeCongeRepository, ModelMapper modelMapper, ExerciceRepository exerciceRepository) {
+                            SoldeCongeRepository soldeCongeRepository, ModelMapper modelMapper, ExerciceRepository exerciceRepository, CongeService congeService) {
         this.congeRepository = congeRepository;
         this.equipeService = equipeService;
         this.jourFerieService = jourFerieService;
@@ -62,6 +65,7 @@ public class CongeServiceImpl implements CongeService {
         this.soldeCongeRepository = soldeCongeRepository;
         this.modelMapper = modelMapper;
         this.exerciceRepository = exerciceRepository;
+        this.congeService = congeService;
     }
 
     @Override
@@ -379,24 +383,46 @@ public class CongeServiceImpl implements CongeService {
         return congeDTOList;
     }
 
-    @Override
-    public int countCollaborateursEnCongeParEquipeAnnee(String nomEquipe) {
-        UUID equipeCode = equipeService.findCodeEquipeByNom(nomEquipe);
-        if (equipeCode == null) {
-            throw new RessourceNotFoundException("Équipe introuvable avec le nom : " + nomEquipe);
-        }
-
-        List<Collaborateur> collaborateurs = collaborateurRepository.findByEquipeCode(equipeCode);
-        if (collaborateurs.isEmpty()) {
-            throw new RessourceNotFoundException("Aucun collaborateur n'a été trouvé dans cette équipe.");
-        }
-
-        long count = collaborateurs.stream()
-                .filter(collaborateur -> isCollaborateurEnConge(collaborateur, LocalDate.now().withDayOfYear(1), LocalDate.now().withDayOfYear(LocalDate.now().lengthOfYear())))
-                .count();
-
-        return (int) count;
+//    @Override
+//    public int countCollaborateursEnCongeParEquipeAnnee(String nomEquipe) {
+//        UUID equipeCode = equipeService.findCodeEquipeByNom(nomEquipe);
+//        if (equipeCode == null) {
+//            throw new RessourceNotFoundException("Équipe introuvable avec le nom : " + nomEquipe);
+//        }
+//
+//        List<Collaborateur> collaborateurs = collaborateurRepository.findByEquipeCode(equipeCode);
+//        if (collaborateurs.isEmpty()) {
+//            throw new RessourceNotFoundException("Aucun collaborateur n'a été trouvé dans cette équipe.");
+//        }
+//
+//        long count = collaborateurs.stream()
+//                .filter(collaborateur -> isCollaborateurEnConge(collaborateur, LocalDate.now().withDayOfYear(1), LocalDate.now().withDayOfYear(LocalDate.now().lengthOfYear())))
+//                .count();
+//
+//        return (int) count;
+//    }
+@Override
+public int countCollaborateursEnCongeParEquipeEtParPeriode(CollaborateursEnCongeRequestDTO request) {
+    UUID equipeCode = equipeService.findCodeEquipeByNom(request.getNomEquipe());
+    if (equipeCode == null) {
+        throw new RessourceNotFoundException("Équipe introuvable avec le nom : " + request.getNomEquipe());
     }
+
+    List<Collaborateur> collaborateurs = collaborateurRepository.findByEquipeCode(equipeCode);
+
+    // Si aucun collaborateur n'est trouvé, retournez 0 au lieu de lancer une exception
+    if (collaborateurs.isEmpty()) {
+        return 0;
+    }
+
+    long count = collaborateurs.stream()
+            .filter(collaborateur -> congeService.isCollaborateurEnConge(collaborateur, request.getDateStartCalenderie(), request.getDateEndCalenderie()))
+            .count();
+
+    return (int) count;
+}
+
+
 
     @Override
     public List<CongeDetailDTO> findCongesByEquipe(String nomEquipe) {

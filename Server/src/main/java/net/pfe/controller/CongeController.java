@@ -1,6 +1,7 @@
 package net.pfe.controller;
 
 import jakarta.validation.Valid;
+import net.pfe.dto.collab.CollaborateursEnCongeRequestDTO;
 import net.pfe.dto.conge.CongeDTO;
 import net.pfe.dto.conge.CongeDTORequest;
 import net.pfe.dto.conge.CongeDetailDTO;
@@ -8,10 +9,12 @@ import net.pfe.dto.jourFerie.JourFerieDTO;
 import net.pfe.exception.RessourceNotFoundException;
 import net.pfe.response.ApiResponse;
 import net.pfe.service.interf.CongeService;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -150,20 +153,51 @@ public class CongeController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/count")
-    public ResponseEntity<ApiResponse<Integer>> countCollaborateursEnCongeParEquipeAnnee(
-            @RequestParam String nomEquipe) {
+//    @GetMapping("/count")
+//    public ResponseEntity<ApiResponse<Integer>> countCollaborateursEnCongeParEquipeAnnee(
+//            @RequestParam String nomEquipe) {
+//
+//        int count = congeService.countCollaborateursEnCongeParEquipeAnnee(nomEquipe);
+//
+//        ApiResponse<Integer> response = ApiResponse.<Integer>builder()
+//                .message("Nombre de collaborateurs en congé trouvés")
+//                .code(HttpStatus.OK.value())
+//                .data(count)
+//                .timestamp(LocalDateTime.now())
+//                .build();
+//        return ResponseEntity.ok(response);
+//    }
 
-        int count = congeService.countCollaborateursEnCongeParEquipeAnnee(nomEquipe);
+    @GetMapping("/count-by-period")
+    public ResponseEntity<ApiResponse<Integer>> countCollaborateursEnCongeParEquipeEtPeriode(
+            @RequestParam String nomEquipe,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateStartCalenderie,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateEndCalenderie) {
 
-        ApiResponse<Integer> response = ApiResponse.<Integer>builder()
-                .message("Nombre de collaborateurs en congé trouvés")
-                .code(HttpStatus.OK.value())
-                .data(count)
-                .timestamp(LocalDateTime.now())
-                .build();
-        return ResponseEntity.ok(response);
+        if (nomEquipe == null || nomEquipe.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ApiResponse.<Integer>builder()
+                            .message("Le nom de l'équipe est requis")
+                            .code(400)
+                            .error("Bad Request")
+                            .timestamp(LocalDateTime.now())
+                            .build());
+        }
+
+        CollaborateursEnCongeRequestDTO request = new CollaborateursEnCongeRequestDTO(nomEquipe, dateStartCalenderie, dateEndCalenderie);
+        int count = congeService.countCollaborateursEnCongeParEquipeEtParPeriode(request);
+
+        return ResponseEntity.ok(
+                ApiResponse.<Integer>builder()
+                        .message("Nombre de collaborateurs en congé trouvés")
+                        .code(200)
+                        .data(count)
+                        .timestamp(LocalDateTime.now())
+                        .build()
+        );
     }
+
+
 
     @GetMapping("/equipe")
     public ResponseEntity<ApiResponse<List<CongeDetailDTO>>> getCongesByEquipe(@RequestParam String nomEquipe) {
