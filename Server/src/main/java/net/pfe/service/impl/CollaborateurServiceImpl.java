@@ -49,17 +49,23 @@ public class CollaborateurServiceImpl implements CollaborateurService {
     public final ModelMapper modelMapper;
     private final CongeService congeService;
 
-
     @Autowired
-<<<<<<< HEAD
-    public CollaborateurServiceImpl(CollaborateurRepository collaborateurRepository, EquipeRepository equipeRepository, NiveauRepository niveauRepository, CongeRepository congeRepository, EquipeService equipeService, NiveauService niveauService, ModelMapper modelMapper, EmailService emailService,@Lazy CongeService congeService) {
-=======
-    public CollaborateurServiceImpl(CollaborateurRepository collaborateurRepository, EquipeRepository equipeRepository, NiveauRepository niveauRepository, CongeRepository congeRepository, JourFerieRepository jourFerieRepository, EquipeService equipeService, NiveauService niveauService, ModelMapper modelMapper, CongeService congeService, EmailService emailService) {
->>>>>>> 2d6bf080d8ad68680644cd0fd6a6a341e330420b
+    public CollaborateurServiceImpl(
+            CollaborateurRepository collaborateurRepository,
+            EquipeRepository equipeRepository,
+            NiveauRepository niveauRepository,
+            CongeRepository congeRepository,
+            JourFerieRepository jourFerieRepository,  // Include jourFerieRepository
+            EquipeService equipeService,
+            NiveauService niveauService,
+            ModelMapper modelMapper,
+            EmailService emailService,
+            @Lazy CongeService congeService) {
+
         this.collaborateurRepository = collaborateurRepository;
         this.equipeRepository = equipeRepository;
         this.congeRepository = congeRepository;
-        this.jourFerieRepository = jourFerieRepository;
+        this.jourFerieRepository = jourFerieRepository;  // Assign it here
         this.emailService = emailService;
         this.niveauRepository = niveauRepository;
         this.equipeService = equipeService;
@@ -67,6 +73,7 @@ public class CollaborateurServiceImpl implements CollaborateurService {
         this.modelMapper = modelMapper;
         this.congeService = congeService;
     }
+
 
     @Override
     public CollaborateurDTO createCollaborateur(AddCollaborateurDTORequest addCollaborateurDTORequest) {
@@ -237,11 +244,7 @@ public class CollaborateurServiceImpl implements CollaborateurService {
         return mapCollaborateursToDTOs(collaborateurs);
     }
 
-
-
-
     //pour email:
-
     @Override
     public void sendDailyReportToTeamLeaders(LocalDate date) {
         Map<String, List<Conge>> rapport = generateDailyReportForTeamLeaders(date);
@@ -260,7 +263,6 @@ public class CollaborateurServiceImpl implements CollaborateurService {
         List<Equipe> equipes = equipeRepository.findAll();
         // Get remaining holidays for the current month
         List<LocalDate> joursFeriesRestants = getRemainingHolidaysForCurrentMonth();
-
 
         for (Equipe equipe : equipes) {
             String nomEquipe = equipe.getNom();
@@ -301,6 +303,7 @@ public class CollaborateurServiceImpl implements CollaborateurService {
             }
         }
     }
+
     private List<LocalDate> getRemainingHolidaysForCurrentMonth() {
         LocalDate today = LocalDate.now();
         YearMonth currentMonth = YearMonth.from(today);
@@ -319,9 +322,6 @@ public class CollaborateurServiceImpl implements CollaborateurService {
                 .collect(Collectors.toList());
     }
 
-
-
-
     public Map<String, List<Conge>> generateDailyReportForTeamLeaders(LocalDate date) {
         List<Equipe> equipes = equipeRepository.findAll();
         Map<String, List<Conge>> rapport = new HashMap<>();
@@ -334,6 +334,4 @@ public class CollaborateurServiceImpl implements CollaborateurService {
 
         return rapport;
     }
-
-
 }
