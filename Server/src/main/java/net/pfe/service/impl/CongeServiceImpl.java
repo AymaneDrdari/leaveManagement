@@ -14,10 +14,7 @@ import net.pfe.repository.CongeRepository;
 import net.pfe.repository.ExerciceRepository;
 import net.pfe.repository.SoldeCongeRepository;
 import net.pfe.service.EmailService;
-import net.pfe.service.interf.CollaborateurService;
-import net.pfe.service.interf.CongeService;
-import net.pfe.service.interf.EquipeService;
-import net.pfe.service.interf.JourFerieService;
+import net.pfe.service.interf.*;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,18 +50,20 @@ public class CongeServiceImpl implements CongeService {
     private final SoldeCongeRepository soldeCongeRepository;
     private final ModelMapper modelMapper;
     private final ExerciceRepository exerciceRepository;
+    private final ExerciceService exerciceService;
 
     @Autowired
-    public CongeServiceImpl(CongeRepository congeRepository, EquipeService equipeService, JourFerieService jourFerieService,
+    public CongeServiceImpl(CongeRepository congeRepository, EquipeService equipeService, @Lazy JourFerieService jourFerieService,
                             CollaborateurRepository collaborateurRepository, @Lazy CollaborateurService collaborateurService,
-                            SoldeCongeRepository soldeCongeRepository, ModelMapper modelMapper, ExerciceRepository exerciceRepository, EmailService emailService) {
+                            SoldeCongeRepository soldeCongeRepository, ModelMapper modelMapper, @Lazy ExerciceService exerciceService, EmailService emailService, ExerciceRepository exerciceRepository) {
         this.congeRepository = congeRepository;
         this.equipeService = equipeService;
-        this.jourFerieService = jourFerieService;
+        this.jourFerieService = jourFerieService;  // Injection avec @Lazy
         this.collaborateurRepository = collaborateurRepository;
-        this.collaborateurService = collaborateurService;
+        this.collaborateurService = collaborateurService; // Injection avec @Lazy
         this.soldeCongeRepository = soldeCongeRepository;
         this.modelMapper = modelMapper;
+        this.exerciceService = exerciceService; // Injection avec @Lazy
         this.exerciceRepository = exerciceRepository;
     }
 

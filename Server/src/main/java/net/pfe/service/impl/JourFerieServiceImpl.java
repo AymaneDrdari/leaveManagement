@@ -30,23 +30,23 @@ public class JourFerieServiceImpl implements JourFerieService {
     private static final Logger logger = LoggerFactory.getLogger(CollaborateurServiceImpl.class);
 
     public final JourFerieRepository jourFerieRepository;
-
+    public final ExerciceService exerciceService;
     public final ModelMapper modelMapper;
     @Autowired
-    public JourFerieServiceImpl(JourFerieRepository jourFerieRepository,  ModelMapper modelMapper) {
+    public JourFerieServiceImpl(JourFerieRepository jourFerieRepository,  ModelMapper modelMapper,ExerciceService exerciceService) {
         this.jourFerieRepository = jourFerieRepository;
+        this.exerciceService = exerciceService;
         this.modelMapper = modelMapper;
     }
 
 
     @Override
     public JourFerieDTO creerJourFerie(JourFerieRequestDTO jourFerieRequestDTO) {
-        // Vérification des champs obligatoires
+        // Vérifications des champs obligatoires
         if (jourFerieRequestDTO.getDescription() == null) {
             throw new IllegalArgumentException("Description cannot be null");
         }
 
-        // Vérification que dateFin est postérieure ou égale à dateDebut
         if (jourFerieRequestDTO.getDateFin().isBefore(jourFerieRequestDTO.getDateDebut())) {
             throw new IllegalArgumentException("La date de fin doit être postérieure ou égale à la date de début.");
         }
@@ -54,8 +54,12 @@ public class JourFerieServiceImpl implements JourFerieService {
         JourFerie jourFerie = modelMapper.map(jourFerieRequestDTO, JourFerie.class);
         jourFerieRepository.save(jourFerie);
 
+        // Recalcul de l'exercice après l'ajout d'un jour férié
+        exerciceService.calculerExerciceAnnuel(jourFerie.getDateDebut().getYear());
+
         return modelMapper.map(jourFerie, JourFerieDTO.class);
     }
+
 
 
     @Override
@@ -99,12 +103,10 @@ public class JourFerieServiceImpl implements JourFerieService {
 
     @Override
     public JourFerieDTO updateJourFerie(UUID id, JourFerieRequestDTO jourFerieRequestDTO) {
-        // Vérification que l'identifiant du jour férié est non null
         if (id == null) {
             throw new IllegalArgumentException("L'identifiant du jour férié est requis pour la mise à jour.");
         }
 
-        // Vérification des champs obligatoires
         if (jourFerieRequestDTO.getDescription() == null) {
             throw new IllegalArgumentException("Description cannot be null");
         }
@@ -113,19 +115,21 @@ public class JourFerieServiceImpl implements JourFerieService {
             throw new IllegalArgumentException("La date de fin doit être postérieure ou égale à la date de début.");
         }
 
-    // Vérification si le jour férié existe
-    JourFerie existingJourFerie = jourFerieRepository.findById(id)
-            .orElseThrow(() -> new RessourceNotFoundException("Jour férié non trouvé avec l'identifiant : " + id));
+        JourFerie existingJourFerie = jourFerieRepository.findById(id)
+                .orElseThrow(() -> new RessourceNotFoundException("Jour férié non trouvé avec l'identifiant : " + id));
 
-    existingJourFerie.setDescription(jourFerieRequestDTO.getDescription());
-    existingJourFerie.setDateDebut(jourFerieRequestDTO.getDateDebut());
-    existingJourFerie.setDateFin(jourFerieRequestDTO.getDateFin());
-    existingJourFerie.setIsFixe(jourFerieRequestDTO.getIsFixe());
+        existingJourFerie.setDescription(jourFerieRequestDTO.getDescription());
+        existingJourFerie.setDateDebut(jourFerieRequestDTO.getDateDebut());
+        existingJourFerie.setDateFin(jourFerieRequestDTO.getDateFin());
+        existingJourFerie.setIsFixe(jourFerieRequestDTO.getIsFixe());
 
-    jourFerieRepository.save(existingJourFerie);
+        jourFerieRepository.save(existingJourFerie);
 
-    return modelMapper.map(existingJourFerie, JourFerieDTO.class);
-}
+        // Recalcul de l'exercice après la mise à jour d'un jour férié
+        exerciceService.calculerExerciceAnnuel(existingJourFerie.getDateDebut().getYear());
+
+        return modelMapper.map(existingJourFerie, JourFerieDTO.class);
+    }
 
 
     @Override
@@ -135,8 +139,13 @@ public class JourFerieServiceImpl implements JourFerieService {
         }
         JourFerie jourFerie = jourFerieRepository.findById(id)
                 .orElseThrow(() -> new RessourceNotFoundException("Jour férié non trouvé avec l'identifiant : " + id));
+
         jourFerieRepository.delete(jourFerie);
+
+        // Recalcul de l'exercice après la suppression d'un jour férié
+        exerciceService.calculerExerciceAnnuel(jourFerie.getDateDebut().getYear());
     }
+
     @Override
     public List<JourFerieDTO> getAllJoursFeries() {
         logger.info("Début de la récupération de tous les jours fériés");

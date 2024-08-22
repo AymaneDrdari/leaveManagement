@@ -51,10 +51,11 @@ public class CollaborateurServiceImpl implements CollaborateurService {
     public final EquipeService equipeService;
     public final NiveauService niveauService;
     public final ModelMapper modelMapper;
+    private final CongeService congeService;
 
 
     @Autowired
-    public CollaborateurServiceImpl(CollaborateurRepository collaborateurRepository, EquipeRepository equipeRepository, NiveauRepository niveauRepository, CongeRepository congeRepository, EquipeService equipeService, NiveauService niveauService, ModelMapper modelMapper, CongeService congeService, EmailService emailService) {
+    public CollaborateurServiceImpl(CollaborateurRepository collaborateurRepository, EquipeRepository equipeRepository, NiveauRepository niveauRepository, CongeRepository congeRepository, EquipeService equipeService, NiveauService niveauService, ModelMapper modelMapper, EmailService emailService,@Lazy CongeService congeService) {
         this.collaborateurRepository = collaborateurRepository;
         this.equipeRepository = equipeRepository;
         this.congeRepository = congeRepository;
@@ -63,6 +64,7 @@ public class CollaborateurServiceImpl implements CollaborateurService {
         this.equipeService = equipeService;
         this.niveauService = niveauService;
         this.modelMapper = modelMapper;
+        this.congeService = congeService;
     }
 
     @Override
