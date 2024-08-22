@@ -5,7 +5,6 @@ import { catchError } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { Leave } from '../models/leave';
 import { ApiResponse } from '../models/ApiResponse';
-import {Collaborateur} from "../models/collaborateur";
 import {CongeDetailDTO} from "../models/conge-detail-dto.model";
 
 @Injectable({
@@ -16,12 +15,14 @@ export class LeaveService {
 
   private selectedTeamSubject = new BehaviorSubject<string | null>(null);
   selectedTeam$ = this.selectedTeamSubject.asObservable();
-  private selectedDateSubject = new BehaviorSubject<string | null>(null);
+  private selectedDateSubject = new BehaviorSubject<{ startDate: string; endDate: string } | null>(null);
   selectedDate$ = this.selectedDateSubject.asObservable();
   // Nouveau Subject pour notifier les mises à jour de congés
   private leavesUpdatedSubject = new Subject<void>();
   leavesUpdated$ = this.leavesUpdatedSubject.asObservable();
-
+// Variables pour stocker la dernière plage de dates sélectionnée
+  private lastSelectedStartDate: string | null = null;
+  private lastSelectedEndDate: string | null = null;
   private httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' })
   };
@@ -30,10 +31,9 @@ export class LeaveService {
 
 
   // Méthode pour mettre à jour la date sélectionnée
-  setSelectedDate(date: string): void {
-    this.selectedDateSubject.next(date);
+  setSelectedDate(startDate: string, endDate: string) {
+    this.selectedDateSubject.next({ startDate, endDate });
   }
-
 
 
   setSelectedTeam(team: string): void {
@@ -41,12 +41,22 @@ export class LeaveService {
   }
 
 
+
+  getCountCollaborateursConge(nomEquipe: string, startDate: string, endDate: string): Observable<ApiResponse<number>> {
+    return this.http.get<ApiResponse<number>>(`${this.apiUrl}/count-by-period?nomEquipe=${nomEquipe}&startDate=${startDate}&endDate=${endDate}`)
+      .pipe(
+        // tap(response=>console.log('Leave counts response:',response)),
+        catchError(this.handleError));
+  }
+
+
   // Méthode pour récupérer tous les congés
 
   getCountCollaborateursEnConge(nomEquipe: string, mois: number, annee: number): Observable<ApiResponse<number>> {
-    return this.http.get<ApiResponse<number>>(`${this.apiUrl}/count`, {
-      params: { nomEquipe, annee: annee.toString(), mois: mois.toString() } // Convertir en chaîne de caractères
-    }).pipe(catchError(this.handleError));
+    return this.http.get<ApiResponse<number>>(`${this.apiUrl}/count?nomEquipe=${nomEquipe}&mois=${mois}&annee=${annee}`)
+      .pipe(
+        // tap(response=>console.log('Leave counts response:',response)),
+        catchError(this.handleError));
   }
 
   getCongesByEquipe(nomEquipe: string, annee: number): Observable<ApiResponse<CongeDetailDTO[]>> {

@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { LeaveService } from '../../services/leave.service';
 import { EquipeService } from '../../services/equipe.service';
 import { EquipeDTO } from '../../models/equipe.model';
-import { Subscription } from 'rxjs';
+import { forkJoin, map, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-indicators',
@@ -10,11 +10,13 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./indicators.component.css']
 })
 export class IndicatorsComponent implements OnInit, OnDestroy {
+  // Dictionnaire pour stocker les comptes de congé par équipe
   leaveCounts: { [key: string]: number } = {};
+  // Ensemble pour suivre les cartes actives (dynamique de l'interface)
   activeCards: Set<string> = new Set();
+  // Liste des équipes
   equipes: EquipeDTO[] = [];
-  moisSelectionne: number = new Date().getMonth() +1; // Mois actuel
-  anneeSelectionnee: number = new Date().getFullYear(); // Année actuelle
+  // Abonnement pour surveiller les changements de dates sélectionnées
   private selectedDateSubscription!: Subscription;
 
   constructor(
@@ -23,101 +25,107 @@ export class IndicatorsComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.loadEquipes();
+    this.loadEquipes(); // Charger les équipes lors de l'initialisation du composant
 
-    // Vérifiez si une date est sélectionnée au démarrage
-    this.selectedDateSubscription = this.leaveService.selectedDate$.subscribe(date => {
-      if (date) {
-        const [annee, mois] = this.extractYearMonth(date);
-        this.updateMoisAnnee(mois, annee);
-      } else {
-        // Si aucune date n'est sélectionnée, chargez les congés du mois et de l'année actuels
-        this.loadLeaveCounts(this.moisSelectionne, this.anneeSelectionnee);
+    // S'abonner aux changements de dates sélectionnées
+    this.selectedDateSubscription = this.leaveService.selectedDate$.subscribe(dateRange => {
+      if (dateRange) {
+        const { startDate, endDate } = dateRange;
+        this.loadLeaveCounts(startDate, endDate); // Charger les comptes de congé lorsque les dates changent
       }
     });
-
-    // Chargez les congés pour le mois et l'année actuels au démarrage
-    this.loadLeaveCounts(this.moisSelectionne, this.anneeSelectionnee);
   }
 
-
-
   ngOnDestroy(): void {
+    // Se désabonner pour éviter les fuites de mémoire
     if (this.selectedDateSubscription) {
       this.selectedDateSubscription.unsubscribe();
     }
   }
 
-  private extractYearMonth(date: string): [number, number] {
-    const [year, month] = date.split('-').map(Number);
-    return [year, month];
-  }
-
   loadEquipes(): void {
+    // Charger toutes les équipes depuis le service
     this.equipeService.getAllEquipes().subscribe({
       next: (equipes) => {
-        this.equipes = equipes;
-        // Charger les congés pour le mois et l'année actuels après avoir chargé les équipes
-        this.loadLeaveCounts(this.moisSelectionne, this.anneeSelectionnee);
-        console.log('mois selctionnée:', this.moisSelectionne)
+        this.equipes = equipes; // Stocker les équipes dans le tableau
+
+        // Définir les dates de départ et de fin dynamiquement
+        const today = new Date();
+        const initialStartDate = new Date(today.getFullYear(), today.getMonth(), 1); // Premier jour du mois actuel
+        const initialEndDate = new Date(today.getFullYear(), today.getMonth() + 1, 0); // Dernier jour du mois actuel
+
+        // Convertir les dates au format string
+        const startDateString = initialStartDate.toISOString().split('T')[0];
+        const endDateString = initialEndDate.toISOString().split('T')[0];
+
+        // Mettre à jour le service avec les dates initiales
+        this.leaveService.setSelectedDate(startDateString, endDateString);
+
+        // Charger les comptes de congé avec la plage de dates initiale
+        this.loadLeaveCounts(startDateString, endDateString);
       },
       error: (error) => {
-        console.error('Error fetching equipes:', error);
+        // Gérer les erreurs lors de la récupération des équipes
+        console.error('Erreur lors de la récupération des équipes:', error);
       }
     });
   }
 
+  handleDatesSet(startDate: Date, endDate: Date): void {
+    // Conversion des dates au format string
+    const startDateString = startDate.toISOString().split('T')[0];
+    const endDateString = endDate.toISOString().split('T')[0];
 
-  // Nouvelle méthode pour mettre à jour mois et année
-  updateMoisAnnee(mois: number, annee: number): void {
-    if (this.moisSelectionne !== mois || this.anneeSelectionnee !== annee) {
-      this.moisSelectionne = mois;
-      this.anneeSelectionnee = annee;
-      this.loadLeaveCounts(mois, annee);
-    }
+    // Mettre à jour le service avec les nouvelles dates sélectionnées
+    this.leaveService.setSelectedDate(startDateString, endDateString);
+
+    // Charger les comptes de congé avec les nouvelles dates
+    this.loadLeaveCounts(startDateString, endDateString);
   }
 
+  loadLeaveCounts(startDate: string, endDate: string): void {
+    this.leaveCounts = {}; // Réinitialiser les comptes précédents
 
-  loadLeaveCounts(mois: number, annee: number): void {
-    console.log(`Loading leave counts for month ${mois} and year ${annee}`);
-    this.leaveCounts = {};
-
-    this.equipes.forEach(equipe => {
-      console.log(`Requesting leave counts for team ${equipe.nom} for month ${mois} and year ${annee}`);
-      this.leaveService.getCountCollaborateursEnConge(equipe.nom, mois, annee).subscribe({
-        next: (response) => {
-          console.log(`Received leave counts for team ${equipe.nom}:`, response);
+    // Créer des demandes pour chaque équipe afin de récupérer le compte de congé
+    const leaveCountRequests = this.equipes.map(equipe =>
+      this.leaveService.getCountCollaborateursConge(equipe.nom, startDate, endDate).pipe(
+        map(response => {
           if (response.code === 200) {
-            const leaveCount = response.data || 0;
-            this.leaveCounts[equipe.nom] = leaveCount;
+            return { equipe: equipe.nom, leaveCount: response.data || 0 }; // Récupérer le compte de congé
           } else {
-            console.error(`Error: ${response.message}`);
+            console.error(`Erreur: ${response.message}`);
+            return { equipe: equipe.nom, leaveCount: 0 }; // Retourner 0 en cas d'erreur
           }
-        },
-        error: (error) => {
-          console.error(`Error fetching leave counts for team ${equipe.nom}:`, error);
-        }
+        })
+      )
+    );
+
+    // Exécuter toutes les demandes en parallèle et traiter les résultats
+    forkJoin(leaveCountRequests).subscribe(results => {
+      results.forEach(result => {
+        this.leaveCounts[result.equipe] = result.leaveCount; // Mettre à jour leaveCounts
       });
+      console.log('Comptes de congés chargés:', this.leaveCounts);
     });
   }
 
-
-
-
   toggleActiveCard(card: string) {
+    // Basculer l'état actif de la carte (afficher/cacher)
     if (this.activeCards.has(card)) {
       this.activeCards.delete(card);
     } else {
       this.activeCards.add(card);
     }
-    this.leaveService.setSelectedTeam(card);
+    this.leaveService.setSelectedTeam(card); // Mettre à jour l'équipe sélectionnée dans le service
   }
 
   isActiveCard(card: string): boolean {
+    // Vérifier si la carte est active
     return this.activeCards.has(card);
   }
 
   isHovered(card: string): boolean {
+    // Vérifier si la carte est survolée
     return this.isActiveCard(card);
   }
 }

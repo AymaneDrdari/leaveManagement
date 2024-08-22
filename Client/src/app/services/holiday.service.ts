@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
-import {BehaviorSubject, catchError, Observable, throwError} from 'rxjs';
+import {BehaviorSubject, catchError, Observable, switchMap, throwError} from 'rxjs';
 import { environment } from '../../environments/environment';
 import { ApiResponse } from '../models/ApiResponse';
 import { Holiday } from '../models/holiday';
@@ -10,8 +10,6 @@ import { Holiday } from '../models/holiday';
 })
 export class HolidayService {
   private apiUrl = `${environment.apiUrl}/jours-feries`;
-  private holidaysVisibleSubject = new BehaviorSubject<boolean>(true);
-  holidaysVisible$ = this.holidaysVisibleSubject.asObservable();
 
   private httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -42,7 +40,9 @@ export class HolidayService {
     return this.http.put<Holiday>(this.apiUrl, holiday, this.httpOptions).pipe(
       catchError(this.handleError)
     );
+
   }
+
 
   deleteHoliday(id: string): Observable<ApiResponse<null>> {
     return this.http.delete<ApiResponse<null>>(`${this.apiUrl}/${id}`).pipe(
