@@ -368,22 +368,6 @@ public class CongeServiceImpl implements CongeService {
         logger.info("Congé supprimé avec succès avec l'ID : {}", id);
     }
 
-    // Mapper un congé vers son DTO correspondant
-    private CongeDTO mapCongeToDTO(Conge conge) {
-        CongeDTO congeDTO = modelMapper.map(conge, CongeDTO.class);
-        if (conge.getCollaborateur() != null) {
-            congeDTO.setCollaborateurEmail(conge.getCollaborateur().getEmail());
-        }
-        return congeDTO;
-    }
-
-    // Mapper une liste de congés vers une liste de leurs DTOs correspondants
-    private List<CongeDTO> mapCongesToDTOs(List<Conge> conges) {
-        return conges.stream()
-                .map(this::mapCongeToDTO)
-                .collect(Collectors.toList());
-    }
-
     @Override
     public boolean isCollaborateurEnConge(Collaborateur collaborateur, LocalDate dateStart, LocalDate dateEnd) {
         List<Conge> conges = congeRepository.findByCollaborateur(collaborateur);
@@ -479,26 +463,40 @@ public int countCollaborateursEnCongeParEquipeMois(String nomEquipe, int mois, i
                 .couleurEquipe(conge.getCollaborateur().getEquipe().getCouleur())  // Récupération de la couleur de l'équipe
                 .build();
     }
+    // Mapper une liste de congés vers une liste de leurs DTOs correspondants
+    private List<CongeDTO> mapCongesToDTOs(List<Conge> conges) {
+        return conges.stream()
+                .map(this::mapCongeToDTO)
+                .collect(Collectors.toList());
+    }
+    // Mapper un congé vers son DTO correspondant
+    private CongeDTO mapCongeToDTO(Conge conge) {
+        CongeDTO congeDTO = modelMapper.map(conge, CongeDTO.class);
+        if (conge.getCollaborateur() != null) {
+            congeDTO.setCollaborateurEmail(conge.getCollaborateur().getEmail());
+        }
+        return congeDTO;
+    }
 
 
-//    @Override
-//    public int countCollaborateursEnCongeParEquipeParPeriode(String nomEquipe, LocalDate dateStart, LocalDate dateEnd) {
-//        UUID equipeCode = equipeService.findCodeEquipeByNom(nomEquipe);
-//        if (equipeCode == null) {
-//            throw new RessourceNotFoundException("Équipe introuvable avec le nom : " + nomEquipe);
-//        }
-//
-//        List<Collaborateur> collaborateurs = collaborateurRepository.findByEquipeCode(equipeCode);
-//        if (collaborateurs.isEmpty()) {
-//            return 0; // Retourne 0 s'il n'y a aucun collaborateur dans l'équipe
-//        }
-//
-//        long count = collaborateurs.stream()
-//                .filter(collaborateur -> isCollaborateurEnConge(collaborateur, dateStart, dateEnd))
-//                .count();
-//
-//        return (int) count;
-//    }
+    @Override
+    public int countCollaborateursEnCongeParEquipeParPeriode(String nomEquipe, LocalDate dateStart, LocalDate dateEnd) {
+        UUID equipeCode = equipeService.findCodeEquipeByNom(nomEquipe);
+        if (equipeCode == null) {
+            throw new RessourceNotFoundException("Équipe introuvable avec le nom : " + nomEquipe);
+        }
+
+        List<Collaborateur> collaborateurs = collaborateurRepository.findByEquipeCode(equipeCode);
+        if (collaborateurs.isEmpty()) {
+            return 0; // Retourne 0 s'il n'y a aucun collaborateur dans l'équipe
+        }
+
+        long count = collaborateurs.stream()
+                .filter(collaborateur -> isCollaborateurEnConge(collaborateur, dateStart, dateEnd))
+                .count();
+
+        return (int) count;
+    }
 
 //    @Override
 //    public List<CongeDTO> findCongesByEquipeAndPeriod(String nomEquipe, LocalDate startDate, LocalDate endDate) {

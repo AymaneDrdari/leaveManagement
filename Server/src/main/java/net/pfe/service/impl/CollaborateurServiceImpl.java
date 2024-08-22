@@ -3,17 +3,11 @@ package net.pfe.service.impl;
 import lombok.extern.slf4j.Slf4j;
 import net.pfe.dto.collab.AddCollaborateurDTORequest;
 import net.pfe.dto.collab.CollaborateurDTO;
-import net.pfe.entity.Collaborateur;
-import net.pfe.entity.Conge;
-import net.pfe.entity.Equipe;
-import net.pfe.entity.Niveau;
+import net.pfe.entity.*;
 import net.pfe.entity.enums.RoleCollaborateur;
 import net.pfe.exception.RessourceAlreadyExistsException;
 import net.pfe.exception.RessourceNotFoundException;
-import net.pfe.repository.CollaborateurRepository;
-import net.pfe.repository.CongeRepository;
-import net.pfe.repository.EquipeRepository;
-import net.pfe.repository.NiveauRepository;
+import net.pfe.repository.*;
 import net.pfe.service.EmailService;
 import net.pfe.service.interf.CollaborateurService;
 import net.pfe.service.interf.CongeService;
@@ -30,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,16 +41,18 @@ public class CollaborateurServiceImpl implements CollaborateurService {
     private final EquipeRepository equipeRepository;
     private final NiveauRepository niveauRepository;
     private final CongeRepository congeRepository;
+    private final JourFerieRepository jourFerieRepository;
     private final EmailService emailService;
     public final EquipeService equipeService;
     public final NiveauService niveauService;
     public final ModelMapper modelMapper;
 
     @Autowired
-    public CollaborateurServiceImpl(CollaborateurRepository collaborateurRepository, EquipeRepository equipeRepository, NiveauRepository niveauRepository, CongeRepository congeRepository, EquipeService equipeService, NiveauService niveauService, ModelMapper modelMapper, CongeService congeService, EmailService emailService) {
+    public CollaborateurServiceImpl(CollaborateurRepository collaborateurRepository, EquipeRepository equipeRepository, NiveauRepository niveauRepository, CongeRepository congeRepository, JourFerieRepository jourFerieRepository, EquipeService equipeService, NiveauService niveauService, ModelMapper modelMapper, CongeService congeService, EmailService emailService) {
         this.collaborateurRepository = collaborateurRepository;
         this.equipeRepository = equipeRepository;
         this.congeRepository = congeRepository;
+        this.jourFerieRepository = jourFerieRepository;
         this.emailService = emailService;
         this.niveauRepository = niveauRepository;
         this.equipeService = equipeService;
@@ -253,6 +250,9 @@ public class CollaborateurServiceImpl implements CollaborateurService {
 
         // Retrieve team leaders for each team
         List<Equipe> equipes = equipeRepository.findAll();
+        // Get remaining holidays for the current month
+        List<LocalDate> joursFeriesRestants = getRemainingHolidaysForCurrentMonth();
+
 
         for (Equipe equipe : equipes) {
             String nomEquipe = equipe.getNom();
@@ -265,6 +265,12 @@ public class CollaborateurServiceImpl implements CollaborateurService {
                 String email = chef.getEmail();
                 String subject = "Rapport quotidien des congés";
                 StringBuilder text = new StringBuilder("Bonjour,\n\n");
+                // Include remaining holidays for the month
+                if (!joursFeriesRestants.isEmpty()) {
+                    text.append("Jours fériés restants pour ce mois :\n");
+                    joursFeriesRestants.forEach(jour -> text.append("- ").append(jour).append("\n"));
+                    text.append("\n");
+                }
 
                 // Add the total number of people on leave
                 text.append(nombreTotalEnConge).append(" personne(s) absente(s) aujourd'hui :\n\n");
@@ -287,6 +293,25 @@ public class CollaborateurServiceImpl implements CollaborateurService {
             }
         }
     }
+    private List<LocalDate> getRemainingHolidaysForCurrentMonth() {
+        LocalDate today = LocalDate.now();
+        YearMonth currentMonth = YearMonth.from(today);
+
+        // Définir le début et la fin du mois
+        LocalDate startOfMonth = currentMonth.atDay(1);
+        LocalDate endOfMonth = currentMonth.atEndOfMonth();
+
+        // Récupérer les jours fériés pour le mois
+        List<JourFerie> joursFeries = jourFerieRepository.findAllHolidaysForMonth(startOfMonth, endOfMonth);
+
+        // Filtrer les jours fériés pour garder uniquement ceux qui sont à venir
+        return joursFeries.stream()
+                .map(JourFerie::getDateDebut)
+                .filter(jour -> jour.isAfter(today) || jour.isEqual(today))
+                .collect(Collectors.toList());
+    }
+
+
 
 
     public Map<String, List<Conge>> generateDailyReportForTeamLeaders(LocalDate date) {

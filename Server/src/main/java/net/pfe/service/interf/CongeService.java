@@ -30,29 +30,11 @@ public interface CongeService {
 
     //List<CongeDetailDTO> findCongesByEquipe(String nomEquipe);
 
-    //    @Override
-    //    public int countCollaborateursEnCongeParEquipeAnnee(String nomEquipe) {
-    //        UUID equipeCode = equipeService.findCodeEquipeByNom(nomEquipe);
-    //        if (equipeCode == null) {
-    //            throw new RessourceNotFoundException("Équipe introuvable avec le nom : " + nomEquipe);
-    //        }
-    //
-    //        List<Collaborateur> collaborateurs = collaborateurRepository.findByEquipeCode(equipeCode);
-    //        if (collaborateurs.isEmpty()) {
-    //            throw new RessourceNotFoundException("Aucun collaborateur n'a été trouvé dans cette équipe.");
-    //        }
-    //
-    //        long count = collaborateurs.stream()
-    //                .filter(collaborateur -> isCollaborateurEnConge(collaborateur, LocalDate.now().withDayOfYear(1), LocalDate.now().withDayOfYear(LocalDate.now().lengthOfYear())))
-    //                .count();
-    //
-    //        return (int) count;
-    //    }
     int countCollaborateursEnCongeParEquipeMois(String nomEquipe, int mois, int annee);
 
     List<CongeDetailDTO> findCongesByEquipe(String nomEquipe, int annee);
 
-    //int countCollaborateursEnCongeParEquipeParPeriode(String nomEquipe, LocalDate dateStart, LocalDate dateEnd);
+    int countCollaborateursEnCongeParEquipeParPeriode(String nomEquipe, LocalDate dateStart, LocalDate dateEnd);
 
     //List<CongeDTO> findCongesByEquipeAndPeriod(String nomEquipe, LocalDate startDate, LocalDate endDate);
 }
