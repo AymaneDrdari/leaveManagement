@@ -1,9 +1,9 @@
-import {Component, OnInit, OnDestroy, ElementRef, ViewChild, AfterViewInit, EventEmitter, Output} from '@angular/core';
+import {Component, OnInit, OnDestroy, ElementRef, ViewChild, AfterViewInit} from '@angular/core';
 import { CalendarOptions, EventClickArg, DatesSetArg } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin, {DateClickArg} from '@fullcalendar/interaction';
-import { Subscription } from 'rxjs';
+import {forkJoin, map, Observable, Subscription} from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { LeaveService } from '../../services/leave.service';
 import { ApiResponse } from '../../models/ApiResponse';
@@ -15,6 +15,7 @@ import { AddEditLeaveComponent } from '../leave/add-edit-leave/add-edit-leave.co
 import { AddEditHolidayComponent } from '../holiday/add-edit-holiday/add-edit-holiday.component';
 import {EquipeService} from "../../services/equipe.service";
 import {EquipeDTO} from "../../models/equipe.model";
+import {Leave} from "../../models/leave";
 
 @Component({
   selector: 'app-calendar',
@@ -26,11 +27,9 @@ export class CalendarComponent implements OnInit, OnDestroy, AfterViewInit {
   selectedTeams: string[] = [];  // Liste des équipes sélectionnées
   teamSubscription?: Subscription;
   holidays: any[] = [];
+  leaveRequests: Observable<CongeDetailDTO[]>[] = [];  // Déclarez leaveRequests comme tableau d'Observables
   currentMonth: number;
   currentYear: number;
-  leaveCounts: { [key: string]: number } = {};
-  equipes: EquipeDTO[] = [];
-  private selectedDateSubscription!: Subscription;
   contextMenuX: number = 0;
   contextMenuY: number = 0;
   showContextMenu: boolean = false;
@@ -46,7 +45,7 @@ export class CalendarComponent implements OnInit, OnDestroy, AfterViewInit {
       right: 'dayGridMonth,timeGridWeek,timeGridDay'
     },
     events: [],
-    height: 500,
+    height: 600,
     contentHeight: 100,
     themeSystem: 'bootstrap',
     eventClick: this.handleEventClick.bind(this),
@@ -72,7 +71,6 @@ export class CalendarComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.leaveService.leavesUpdated$.subscribe(() => {
       this.updateCalendarEvents(); // Mise à jour des événements du calendrier
-      //this.loadLeaveCounts(this.currentMonth, this.currentYear); // Mettre à jour les comptes de congés ici
     });
 
     this.loadAllTeamsLeaves();
@@ -91,30 +89,6 @@ export class CalendarComponent implements OnInit, OnDestroy, AfterViewInit {
     document.removeEventListener('click', this.onDocumentClick.bind(this));
   }
 
-  // loadLeaveCounts(mois: number, annee: number): void {
-  //   // Réinitialiser les comptes avant de charger les nouveaux
-  //   this.leaveCounts = {};
-  //
-  //   this.selectedTeams.forEach(equipe => {
-  //     this.leaveService.getCountCollaborateursEnConge(equipe, mois, annee)
-  //       .subscribe(
-  //         (response) => {
-  //           if (response && response.data !== undefined) {
-  //
-  //             this.leaveCounts[equipe] = response.data || 0; // Mettre à jour le compte avec la donnée reçue
-  //           } else {
-  //             this.leaveCounts[equipe] = 0; // Initialiser à 0 en cas de données manquantes
-  //           }
-  //         },
-  //         (error) => {
-  //           console.error(`Erreur lors de la récupération du nombre de congés pour l'équipe ${equipe}:`, error);
-  //           this.leaveCounts[equipe] = 0; // Initialiser à 0 en cas d'erreur
-  //         }
-  //       );
-  //   });
-  // }
-
-
   // Charger les congés de toutes les équipes au démarrage
   loadAllTeamsLeaves(): void {
     this.equipeService.getAllEquipes().subscribe(
@@ -131,49 +105,57 @@ export class CalendarComponent implements OnInit, OnDestroy, AfterViewInit {
   updateCalendarEvents(): void {
     this.calendarEvents = [...this.holidays];
     if (this.selectedTeams.length > 0) {
+      const leaveRequests: Observable<Leave[]>[] = []; // Initialize leaveRequests here
       const fetchedTeams = new Set<string>();
       const startYear = new Date().getFullYear() - 5;
       const endYear = new Date().getFullYear();
 
       this.selectedTeams.forEach(team => {
         for (let year = startYear; year <= endYear; year++) {
-          this.leaveService.getCongesByEquipe(team, year).subscribe((leaveResponse: ApiResponse<CongeDetailDTO[]>) => {
-            if (leaveResponse && leaveResponse.data) {
-              const leaves = leaveResponse.data.map(congeDetail => {
-                const dateStart = new Date(congeDetail.date_debut);
-                const dateEnd = new Date(congeDetail.date_fin);
-                dateEnd.setDate(dateEnd.getDate() + 1);
-                return {
-                  title: `${congeDetail.collaborateur_nom} ${congeDetail.collaborateur_prenom}`,
-                  start: dateStart.toISOString().split('T')[0],
-                  end: dateEnd.toISOString().split('T')[0],
-                  color: congeDetail.couleur_equipe || '#000000',
-                  extendedProps: congeDetail
-                };
-              }).filter(event => event.start && event.end);
-
-              if (!fetchedTeams.has(`${team}-${year}`)) {
-                this.calendarEvents.push(...leaves);
-                fetchedTeams.add(`${team}-${year}`);
-              }
-              this.updateCalendarWithEvents();
-            }
-          });
+          leaveRequests.push(
+            this.leaveService.getCongesByEquipe(team, year).pipe(
+              map((leaveResponse: ApiResponse<CongeDetailDTO[]>) => {
+                if (leaveResponse && leaveResponse.data) {
+                  return leaveResponse.data.map(congeDetail => {
+                    const dateStart = new Date(congeDetail.date_debut);
+                    const dateEnd = new Date(congeDetail.date_fin);
+                    dateEnd.setDate(dateEnd.getDate() + 1);
+                    return {
+                      title: `${congeDetail.collaborateur_nom} ${congeDetail.collaborateur_prenom}`,
+                      start: dateStart.toISOString().split('T')[0],
+                      end: dateEnd.toISOString().split('T')[0],
+                      color: congeDetail.couleur_equipe || '#000000',
+                      extendedProps: congeDetail
+                    } as any; // Cast to any to bypass the type issue
+                  }).filter(event => event.start && event.end);
+                }
+                return [];
+              })
+            )
+          );
         }
+      });
+
+      // Use forkJoin to wait for all requests to complete
+      forkJoin(leaveRequests).subscribe(allLeaves => {
+        allLeaves.forEach(leaves => {
+          if (leaves.length) {
+            this.calendarEvents.push(...leaves);
+          }
+        });
+        this.updateCalendarWithEvents();
       });
     } else {
       this.updateCalendarWithEvents();
     }
   }
 
+
   updateCalendarWithEvents(): void {
     const uniqueEvents = Array.from(new Set(this.calendarEvents.map(e => JSON.stringify(e))))
       .map(e => JSON.parse(e));
-    //console.log('Unique calendar events:', uniqueEvents); // Vérifiez les événements uniques
     this.calendarOptions = { ...this.calendarOptions, events: uniqueEvents };
   }
-
-
 
   setActiveCard(card: string | null) {
     if (card) {
@@ -248,23 +230,22 @@ export class CalendarComponent implements OnInit, OnDestroy, AfterViewInit {
 
 
   handleDatesSet(arg: DatesSetArg): void {
-    // Récupérer l'année et le mois actuels basés sur les dates visibles dans le calendrier
+    // Récupération de l'année à partir de l'objet date
     const year = arg.start.getFullYear();
-    const month = arg.start.getMonth() + 1;
     this.currentYear = year;
-    this.currentMonth = month;
 
-    // Charger les jours fériés pour chaque année visible
-    this.fetchHolidays(this.currentYear);
+    const startDate = arg.start.toISOString().split('T')[0];
+    const endDate = arg.end.toISOString().split('T')[0];
 
-    // Charger les comptes de congés pour le mois et l'année actuels
-    //this.loadLeaveCounts(this.currentMonth, this.currentYear);
+    console.log(`Date Start: ${startDate}, Date End: ${endDate}`);
 
-    this.updateCalendarEvents();
-
-    const formattedDate = `${year}-${month.toString().padStart(2, '0')}`;
-    this.leaveService.setSelectedDate(formattedDate);
+    // Appeler le service pour définir la date sélectionnée
+    this.leaveService.setSelectedDate(startDate, endDate);
   }
+
+
+
+
 
 
 
@@ -278,6 +259,7 @@ export class CalendarComponent implements OnInit, OnDestroy, AfterViewInit {
 
   handleDateClick(arg: DateClickArg): void {
     this.clickedDate = arg.dateStr;
+    console.log('Date clicked :', this.clickedDate)
     this.contextMenuX = arg.jsEvent.clientX;
     this.contextMenuY = arg.jsEvent.clientY;
     this.showContextMenu = true;

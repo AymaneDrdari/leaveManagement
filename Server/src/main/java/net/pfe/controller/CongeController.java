@@ -199,46 +199,46 @@ public class CongeController {
         return ResponseEntity.ok(response);
     }
 
-//    @GetMapping("/count-by-period")
-//    public ResponseEntity<ApiResponse<Long>> countCongesByEquipeAndPeriod(
-//            @RequestParam String nomEquipe,
-//            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-//            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-//
-//        try {
-//            // Appeler le service pour compter les congés
-//            long count = congeService.countCollaborateursEnCongeParEquipeParPeriode(nomEquipe, startDate, endDate);
-//
-//            // Créer la réponse API
-//            ApiResponse<Long> response = ApiResponse.<Long>builder()
-//                    .message("Nombre de congés trouvés pour l'équipe " + nomEquipe + " entre " + startDate + " et " + endDate)
-//                    .code(HttpStatus.OK.value())
-//                    .data(count)
-//                    .timestamp(LocalDateTime.now())
-//                    .build();
-//
-//            // Retourner la réponse
-//            return ResponseEntity.ok(response);
-//        } catch (RessourceNotFoundException e) {
-//            // Gérer le cas où l'équipe ou les collaborateurs ne sont pas trouvés
-//            ApiResponse<Long> response = ApiResponse.<Long>builder()
-//                    .message(e.getMessage())
-//                    .code(HttpStatus.NOT_FOUND.value())
-//                    .data(0L)
-//                    .timestamp(LocalDateTime.now())
-//                    .build();
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-//        } catch (Exception e) {
-//            // Gérer toute autre exception
-//            ApiResponse<Long> response = ApiResponse.<Long>builder()
-//                    .message("Erreur lors du traitement de la demande")
-//                    .code(HttpStatus.INTERNAL_SERVER_ERROR.value())
-//                    .data(0L)
-//                    .timestamp(LocalDateTime.now())
-//                    .build();
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-//        }
-//    }
+    @GetMapping("/count-by-period")
+    public ResponseEntity<ApiResponse<Long>> countCongesByEquipeAndPeriod(
+            @RequestParam String nomEquipe,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+
+        try {
+            // Appeler le service pour compter les congés
+            long count = congeService.countCollaborateursEnCongeParEquipeParPeriode(nomEquipe, startDate, endDate);
+
+            // Créer la réponse API
+            ApiResponse<Long> response = ApiResponse.<Long>builder()
+                    .message("Nombre de congés trouvés pour l'équipe " + nomEquipe + " entre " + startDate + " et " + endDate)
+                    .code(HttpStatus.OK.value())
+                    .data(count)
+                    .timestamp(LocalDateTime.now())
+                    .build();
+
+            // Retourner la réponse
+            return ResponseEntity.ok(response);
+        } catch (RessourceNotFoundException e) {
+            // Gérer le cas où l'équipe ou les collaborateurs ne sont pas trouvés
+            ApiResponse<Long> response = ApiResponse.<Long>builder()
+                    .message(e.getMessage())
+                    .code(HttpStatus.NOT_FOUND.value())
+                    .data(0L)
+                    .timestamp(LocalDateTime.now())
+                    .build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        } catch (Exception e) {
+            // Gérer toute autre exception
+            ApiResponse<Long> response = ApiResponse.<Long>builder()
+                    .message("Erreur lors du traitement de la demande")
+                    .code(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                    .data(0L)
+                    .timestamp(LocalDateTime.now())
+                    .build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
 
 
 //    @GetMapping("/by-period")

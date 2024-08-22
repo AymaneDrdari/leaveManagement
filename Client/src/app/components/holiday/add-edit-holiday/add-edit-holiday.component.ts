@@ -67,6 +67,7 @@ export class AddEditHolidayComponent implements OnDestroy {
       console.log("After conversion to UTC:", holiday.date_debut, holiday.date_fin);
 
       // Appel du service pour créer ou mettre à jour le jour férié.
+      const currentYear= new Date().getFullYear();
       const saveObservable = holiday.id
         ? this.holidayService.updateHoliday(holiday)
         : this.holidayService.createHoliday(holiday);
