@@ -50,6 +50,12 @@ public class CollaborateurServiceImpl implements CollaborateurService {
     private final CongeService congeService;
 
     @Autowired
+    private SoldeCongeRepository soldeCongeRepository;
+
+    @Autowired
+    private ExerciceRepository exerciceRepository;
+
+    @Autowired
     public CollaborateurServiceImpl(
             CollaborateurRepository collaborateurRepository,
             EquipeRepository equipeRepository,
@@ -117,6 +123,10 @@ public class CollaborateurServiceImpl implements CollaborateurService {
         Collaborateur collaborateur = collaborateurRepository.findById(id)
                 .orElseThrow(() -> new RessourceNotFoundException("Collaborateur non trouvé avec l'identifiant : " + id));
 
+        // Vérifier s'il y a un changement dans le nombre de jours payés par mois
+        double ancienNombreJoursPayesMois = collaborateur.getNombreJoursPayesMois();
+        double nouveauNombreJoursPayesMois = collaborateurDTO.getNombreJoursPayesMois();
+
         // Rechercher et assigner l'équipe et le niveau s'ils sont spécifiés
         if (collaborateurDTO.getEquipe() != null) {
             Equipe equipe = equipeRepository.findById(collaborateurDTO.getEquipe().getCode())
@@ -136,9 +146,43 @@ public class CollaborateurServiceImpl implements CollaborateurService {
         // Enregistrer les modifications dans la base de données
         Collaborateur updatedCollaborateur = collaborateurRepository.save(collaborateur);
 
+        // Si le nombre de jours payés par mois a changé, recalculer le solde de congé
+        if (ancienNombreJoursPayesMois != nouveauNombreJoursPayesMois) {
+            logger.info("Le nombre de jours payés par mois a été modifié pour le collaborateur {}. Ancien: {}, Nouveau: {}",
+                    updatedCollaborateur.getEmail(), ancienNombreJoursPayesMois, nouveauNombreJoursPayesMois);
+
+            // Récupérer l'exercice de l'année en cours
+            int currentYear = LocalDate.now().getYear();
+            Exercice exercice = getExerciceByYear(currentYear);
+
+            // Calculer le nouveau solde initial basé sur le nouveau nombre de jours payés par mois
+            double nombreJoursOuvrables = exercice.getNombreJoursOuvrables();
+            double nouveauSoldeInitial = nombreJoursOuvrables - (12 * nouveauNombreJoursPayesMois);
+
+            // Récupérer le solde de congé existant pour le collaborateur et l'année en cours
+            SoldeConge soldeConge = soldeCongeRepository.findByCollaborateurAndExercice_Annee(updatedCollaborateur, currentYear)
+                    .orElseThrow(() -> new RessourceNotFoundException("Solde de congé non trouvé pour le collaborateur et l'année spécifiée"));
+
+            // Mettre à jour le solde initial et recalculer le solde restant
+            soldeConge.setSoldeInitial(nouveauSoldeInitial);
+            soldeConge.calculerSoldeRestant();
+
+            // Sauvegarder les modifications du solde de congé
+            soldeCongeRepository.save(soldeConge);
+
+            logger.info("Le solde de congé pour le collaborateur {} a été mis à jour avec succès après la modification du nombre de jours payés par mois.",
+                    updatedCollaborateur.getEmail());
+        }
+
         // Retourner le CollaborateurDTO mis à jour
         return mapCollaborateurToDTO(updatedCollaborateur);
     }
+
+    private Exercice getExerciceByYear(int year) {
+        return exerciceRepository.findByAnnee(year)
+                .orElseThrow(() -> new RessourceNotFoundException("Exercice non trouvé pour l'année : " + year));
+    }
+
 
     @Override
     public void deleteCollaborateur(UUID id) {
