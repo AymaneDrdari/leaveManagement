@@ -7,4 +7,5 @@ export interface ApiResponse<T> {
   totalElements: number;
   totalPages: number;
   currentPage: number;
+
 }

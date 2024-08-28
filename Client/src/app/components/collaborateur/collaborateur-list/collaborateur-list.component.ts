@@ -34,13 +34,17 @@ export class CollaborateurListComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.dataSource.paginator = this.paginator;
+    if (this.paginator) {
+      this.dataSource.paginator = this.paginator;
+    } else {
+      console.error('Paginator is not defined');
+    }
   }
 
   loadCollaborateurs(page: number = 0): void {
     this.collaborateurService.getCollaborateursPage(page, this.pageSize).subscribe((response: ApiResponse<Collaborateur[]>) => {
       this.dataSource.data = response.data;
-      this.totalItems = response.totalElements;
+      this.totalItems = response.data.length;
       this.currentPage = page;
     }, (error: any) => {
       console.error('Error loading collaborateurs:', error);
@@ -91,12 +95,5 @@ export class CollaborateurListComponent implements OnInit, AfterViewInit {
     this.pageSize = event.pageSize;
     this.loadCollaborateurs(this.currentPage);
   }
-
-  get totalPages(): number {
-    return Math.max(Math.ceil(this.totalItems / this.pageSize), 1);
-  }
-
-  paginationArray(): number[] {
-    return Array.from({ length: this.totalPages }, (_, i) => i);
-  }
+  
 }

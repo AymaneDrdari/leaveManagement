@@ -4,6 +4,7 @@ import {BehaviorSubject, catchError, Observable, switchMap, throwError} from 'rx
 import { environment } from '../../environments/environment';
 import { ApiResponse } from '../models/ApiResponse';
 import { Holiday } from '../models/holiday';
+import {Collaborateur} from "../models/collaborateur";
 
 @Injectable({
   providedIn: 'root'
@@ -24,10 +25,11 @@ export class HolidayService {
   }
 
   getAllHolidays(page: number, size: number): Observable<ApiResponse<Holiday[]>> {
-    return this.http.get<ApiResponse<Holiday[]>>(`${this.apiUrl}/page?page=${page}&size=${size}`).pipe(
-      catchError(this.handleError)
+    return this.http.get<ApiResponse<Holiday[]>>(`${this.apiUrl}/page?page=${page}&size=${size}`)
+      .pipe(catchError(this.handleError)
     );
   }
+
 
   createHoliday(holiday: Holiday): Observable<Holiday> {
     console.log('Creating holiday:', holiday);
